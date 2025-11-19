@@ -1,0 +1,172 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  vendor
+  buyer
+  admin
+}
+
+enum VendorStatus {
+  pending
+  approved
+  rejected
+}
+
+enum ProductCategory {
+  fruit
+  vegetable
+}
+
+enum Unit {
+  kg
+  gram
+}
+
+enum ShoppingListStatus {
+  draft
+  completed
+}
+
+model User {
+  id            String        @id @default(uuid())
+  email         String        @unique
+  passwordHash  String        @map("password_hash")
+  role          UserRole
+  vendorStatus  VendorStatus? @map("vendor_status")
+  createdAt     DateTime      @default(now()) @map("created_at")
+  updatedAt     DateTime      @updatedAt @map("updated_at")
+
+  // Relations
+  vendorProducts VendorProduct[]
+  shoppingLists   ShoppingList[]
+  orders          Order[]
+
+  @@map("users")
+}
+
+model Product {
+  id        String          @id @default(uuid())
+  name      String          @unique
+  category  ProductCategory
+  createdAt DateTime        @default(now()) @map("created_at")
+  updatedAt DateTime        @updatedAt @map("updated_at")
+
+  // Relations
+  vendorProducts VendorProduct[]
+  shoppingListItems ShoppingListItem[]
+
+  @@map("products")
+}
+
+model VendorProduct {
+  id        String   @id @default(uuid())
+  vendorId  String   @map("vendor_id")
+  productId String   @map("product_id")
+  quantity  Decimal  @db.Decimal(10, 2)
+  unit      Unit
+  price     Decimal  @db.Decimal(10, 2)
+  origin    String
+  imageUrl  String   @map("image_url")
+  isActive  Boolean  @default(true) @map("is_active")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  vendor         User              @relation(fields: [vendorId], references: [id])
+  product        Product           @relation(fields: [productId], references: [id])
+  shoppingListSelections ShoppingListSelection[]
+  orderItems     OrderItem[]
+
+  @@map("vendor_products")
+}
+
+model ShoppingList {
+  id        String              @id @default(uuid())
+  buyerId   String              @map("buyer_id")
+  status    ShoppingListStatus  @default(draft)
+  createdAt DateTime            @default(now()) @map("created_at")
+  updatedAt DateTime            @updatedAt @map("updated_at")
+
+  // Relations
+  buyer           User                @relation(fields: [buyerId], references: [id])
+  items           ShoppingListItem[]
+  selections      ShoppingListSelection[]
+  orders          Order[]
+
+  @@map("shopping_lists")
+}
+
+model ShoppingListItem {
+  id               String   @id @default(uuid())
+  shoppingListId   String   @map("shopping_list_id")
+  productId        String   @map("product_id")
+  quantity         Decimal  @db.Decimal(10, 2)
+  unit             Unit
+  originPreference String?  @map("origin_preference")
+  createdAt        DateTime @default(now()) @map("created_at")
+
+  // Relations
+  shoppingList     ShoppingList           @relation(fields: [shoppingListId], references: [id])
+  product          Product                @relation(fields: [productId], references: [id])
+  selections       ShoppingListSelection[]
+
+  @@map("shopping_list_items")
+}
+
+model ShoppingListSelection {
+  id                 String   @id @default(uuid())
+  shoppingListId     String   @map("shopping_list_id")
+  shoppingListItemId String   @map("shopping_list_item_id")
+  vendorProductId    String   @map("vendor_product_id")
+  createdAt          DateTime @default(now()) @map("created_at")
+
+  // Relations
+  shoppingList     ShoppingList     @relation(fields: [shoppingListId], references: [id])
+  shoppingListItem ShoppingListItem @relation(fields: [shoppingListItemId], references: [id])
+  vendorProduct    VendorProduct    @relation(fields: [vendorProductId], references: [id])
+
+  @@map("shopping_list_selections")
+}
+
+model Order {
+  id                 String   @id @default(uuid())
+  shoppingListId     String   @map("shopping_list_id")
+  buyerId            String   @map("buyer_id")
+  subtotal           Decimal  @db.Decimal(10, 2)
+  platformCommission Decimal  @db.Decimal(10, 2) @map("platform_commission")
+  grandTotal         Decimal  @db.Decimal(10, 2) @map("grand_total")
+  createdAt          DateTime @default(now()) @map("created_at")
+
+  // Relations
+  shoppingList User      @relation(fields: [buyerId], references: [id])
+  items        OrderItem[]
+
+  @@map("orders")
+}
+
+model OrderItem {
+  id          String   @id @default(uuid())
+  orderId     String   @map("order_id")
+  vendorProductId String @map("vendor_product_id")
+  quantity    Decimal  @db.Decimal(10, 2)
+  unitPrice   Decimal  @db.Decimal(10, 2) @map("unit_price")
+  totalPrice  Decimal  @db.Decimal(10, 2) @map("total_price")
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  // Relations
+  order         Order         @relation(fields: [orderId], references: [id])
+  vendorProduct VendorProduct @relation(fields: [vendorProductId], references: [id])
+
+  @@map("order_items")
+}
+
