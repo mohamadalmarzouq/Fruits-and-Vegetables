@@ -1,9 +1,8 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
-import VendorLogin from './pages/VendorLogin';
+import Login from './pages/Login';
 import VendorRegister from './pages/VendorRegister';
 import VendorDashboard from './pages/VendorDashboard';
-import AdminLogin from './pages/AdminLogin';
 import AdminDashboard from './pages/AdminDashboard';
 import AdminVendors from './pages/AdminVendors';
 import AdminCatalog from './pages/AdminCatalog';
@@ -16,8 +15,12 @@ function App() {
     <AuthProvider>
       <Router>
         <Routes>
+          {/* Unified Login - Works for both vendors and admins */}
+          <Route path="/login" element={<Login />} />
+          <Route path="/vendor/login" element={<Login />} />
+          <Route path="/admin/login" element={<Login />} />
+          
           {/* Vendor Routes */}
-          <Route path="/vendor/login" element={<VendorLogin />} />
           <Route path="/vendor/register" element={<VendorRegister />} />
           <Route
             path="/vendor/dashboard"
@@ -29,7 +32,6 @@ function App() {
           />
           
           {/* Admin Routes */}
-          <Route path="/admin/login" element={<AdminLogin />} />
           <Route
             path="/admin/dashboard"
             element={
@@ -63,7 +65,8 @@ function App() {
             }
           />
           
-          <Route path="/" element={<Navigate to="/vendor/login" replace />} />
+          {/* Default redirect to login */}
+          <Route path="/" element={<Navigate to="/login" replace />} />
         </Routes>
       </Router>
     </AuthProvider>
