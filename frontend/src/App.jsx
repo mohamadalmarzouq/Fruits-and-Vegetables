@@ -3,6 +3,7 @@ import { AuthProvider } from './contexts/AuthContext';
 import VendorLogin from './pages/VendorLogin';
 import VendorRegister from './pages/VendorRegister';
 import VendorDashboard from './pages/VendorDashboard';
+import AdminLogin from './pages/AdminLogin';
 import AdminDashboard from './pages/AdminDashboard';
 import AdminVendors from './pages/AdminVendors';
 import AdminCatalog from './pages/AdminCatalog';
@@ -28,6 +29,7 @@ function App() {
           />
           
           {/* Admin Routes */}
+          <Route path="/admin/login" element={<AdminLogin />} />
           <Route
             path="/admin/dashboard"
             element={

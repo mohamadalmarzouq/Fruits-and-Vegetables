@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 
-const VendorLogin = () => {
+const AdminLogin = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -18,7 +18,15 @@ const VendorLogin = () => {
     const result = await login(email, password);
     
     if (result.success) {
-      navigate('/vendor/dashboard');
+      // Check if user is admin
+      const user = JSON.parse(localStorage.getItem('user'));
+      if (user.role === 'admin') {
+        navigate('/admin/dashboard');
+      } else {
+        setError('Access denied. Admin access only.');
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+      }
     } else {
       setError(result.error);
     }
@@ -31,10 +39,10 @@ const VendorLogin = () => {
       <div className="max-w-md w-full space-y-8">
         <div>
           <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-            Vendor Login
+            Admin Login
           </h2>
           <p className="mt-2 text-center text-sm text-gray-600">
-            Sign in to your vendor account
+            Sign in to admin panel
           </p>
         </div>
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
@@ -87,20 +95,11 @@ const VendorLogin = () => {
               {loading ? 'Signing in...' : 'Sign in'}
             </button>
           </div>
-
-          <div className="text-center">
-            <Link
-              to="/vendor/register"
-              className="text-sm text-indigo-600 hover:text-indigo-500"
-            >
-              Don't have an account? Register here
-            </Link>
-          </div>
         </form>
       </div>
     </div>
   );
 };
 
-export default VendorLogin;
+export default AdminLogin;
 
