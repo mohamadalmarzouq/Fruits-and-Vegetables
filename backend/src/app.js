@@ -9,6 +9,7 @@ import { errorHandler } from './middleware/errorHandler.js';
 import authRoutes from './routes/auth.js';
 import vendorProductRoutes from './routes/vendorProducts.js';
 import productRoutes from './routes/products.js';
+import adminRoutes from './routes/admin.js';
 
 dotenv.config();
 
@@ -34,6 +35,7 @@ app.use('/uploads', express.static(uploadDir));
 app.use('/api/auth', authRoutes);
 app.use('/api/vendor/products', vendorProductRoutes);
 app.use('/api/products', productRoutes);
+app.use('/api/admin', adminRoutes);
 
 // Health check
 app.get('/api/health', (req, res) => {
