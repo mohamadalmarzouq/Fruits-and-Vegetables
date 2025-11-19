@@ -101,7 +101,7 @@ model ShoppingList {
   buyer           User                @relation(fields: [buyerId], references: [id])
   items           ShoppingListItem[]
   selections      ShoppingListSelection[]
-  orders          Order[]
+  orders          Order[]             @relation("ShoppingListOrders")
 
   @@map("shopping_lists")
 }
@@ -148,7 +148,8 @@ model Order {
   createdAt          DateTime @default(now()) @map("created_at")
 
   // Relations
-  shoppingList User      @relation(fields: [buyerId], references: [id])
+  shoppingList ShoppingList @relation("ShoppingListOrders", fields: [shoppingListId], references: [id])
+  buyer        User          @relation(fields: [buyerId], references: [id])
   items        OrderItem[]
 
   @@map("orders")
