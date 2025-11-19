@@ -48,9 +48,17 @@ export const AuthProvider = ({ children }) => {
       const response = await api.post('/auth/register/vendor', { email, password });
       return { success: true, message: response.data.message };
     } catch (error) {
+      console.error('Registration error:', error);
+      // Provide more detailed error messages
+      if (error.code === 'ERR_NETWORK' || error.message === 'Network Error') {
+        return {
+          success: false,
+          error: 'Cannot connect to server. Please check if the backend is running.'
+        };
+      }
       return {
         success: false,
-        error: error.response?.data?.error || 'Registration failed'
+        error: error.response?.data?.error || error.message || 'Registration failed'
       };
     }
   };
