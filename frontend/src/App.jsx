@@ -9,6 +9,11 @@ import AdminCatalog from './pages/AdminCatalog';
 import AdminOrders from './pages/AdminOrders';
 import ProtectedRoute from './components/ProtectedRoute';
 import AdminProtectedRoute from './components/AdminProtectedRoute';
+import BuyerProtectedRoute from './components/BuyerProtectedRoute';
+import BuyerDashboard from './pages/BuyerDashboard';
+import ShoppingList from './pages/ShoppingList';
+import ProductOptions from './pages/ProductOptions';
+import Checkout from './pages/Checkout';
 
 function App() {
   return (
@@ -63,6 +68,40 @@ function App() {
               <AdminProtectedRoute>
                 <AdminOrders />
               </AdminProtectedRoute>
+            }
+          />
+          
+          {/* Buyer Routes */}
+          <Route
+            path="/buyer/dashboard"
+            element={
+              <BuyerProtectedRoute>
+                <BuyerDashboard />
+              </BuyerProtectedRoute>
+            }
+          />
+          <Route
+            path="/buyer/shopping-lists/:id"
+            element={
+              <BuyerProtectedRoute>
+                <ShoppingList />
+              </BuyerProtectedRoute>
+            }
+          />
+          <Route
+            path="/buyer/shopping-lists/:id/items/:itemId/options"
+            element={
+              <BuyerProtectedRoute>
+                <ProductOptions />
+              </BuyerProtectedRoute>
+            }
+          />
+          <Route
+            path="/buyer/shopping-lists/:id/checkout"
+            element={
+              <BuyerProtectedRoute>
+                <Checkout />
+              </BuyerProtectedRoute>
             }
           />
           
