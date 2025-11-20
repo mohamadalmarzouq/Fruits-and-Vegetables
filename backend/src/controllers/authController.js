@@ -103,10 +103,14 @@ export const login = async (req, res, next) => {
 
 export const registerBuyer = async (req, res, next) => {
   try {
-    const { email, password } = req.body;
+    const { email, password, buyerType } = req.body;
 
     if (!email || !password) {
       return res.status(400).json({ error: 'Email and password are required' });
+    }
+
+    if (!buyerType || !['individual', 'organization'].includes(buyerType)) {
+      return res.status(400).json({ error: 'Buyer type is required (individual or organization)' });
     }
 
     if (password.length < 6) {
@@ -130,12 +134,14 @@ export const registerBuyer = async (req, res, next) => {
       data: {
         email,
         passwordHash,
-        role: 'buyer'
+        role: 'buyer',
+        buyerType
       },
       select: {
         id: true,
         email: true,
         role: true,
+        buyerType: true,
         createdAt: true
       }
     });

@@ -113,10 +113,10 @@ const Login = () => {
 
           <div className="text-center">
             <Link
-              to="/vendor/register"
+              to="/register"
               className="text-sm text-indigo-600 hover:text-indigo-500"
             >
-              Don't have a vendor account? Register here
+              Don't have an account? Register here
             </Link>
           </div>
         </form>

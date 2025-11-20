@@ -1,7 +1,7 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
 import Login from './pages/Login';
-import VendorRegister from './pages/VendorRegister';
+import Register from './pages/Register';
 import VendorDashboard from './pages/VendorDashboard';
 import AdminDashboard from './pages/AdminDashboard';
 import AdminVendors from './pages/AdminVendors';
@@ -20,8 +20,9 @@ function App() {
           <Route path="/vendor/login" element={<Login />} />
           <Route path="/admin/login" element={<Login />} />
           
-          {/* Vendor Routes */}
-          <Route path="/vendor/register" element={<VendorRegister />} />
+          {/* Registration - Unified for Vendor and Buyer */}
+          <Route path="/register" element={<Register />} />
+          <Route path="/vendor/register" element={<Register />} />
           <Route
             path="/vendor/dashboard"
             element={
