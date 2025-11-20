@@ -50,14 +50,19 @@ export const getCheckoutSummary = async (req, res, next) => {
       const vendorProduct = selection.vendorProduct;
 
       // Calculate price for the quantity user needs
-      const vpGrams = vendorProduct.unit === 'kg' 
-        ? parseFloat(vendorProduct.quantity) * 1000 
-        : parseFloat(vendorProduct.quantity);
+      // vendorProduct.price is now stored as price per unit (vendor's unit)
       const itemGrams = item.unit === 'kg' 
         ? parseFloat(item.quantity) * 1000 
         : parseFloat(item.quantity);
-      const pricePerGram = parseFloat(vendorProduct.price) / vpGrams;
+      
+      // Convert vendor's price per unit to price per gram
+      const vpUnitGrams = vendorProduct.unit === 'kg' ? 1000 : 1;
+      const pricePerGram = parseFloat(vendorProduct.price) / vpUnitGrams;
       const itemTotal = pricePerGram * itemGrams;
+      
+      // Calculate unit price for display (per buyer's unit)
+      const buyerUnitGrams = item.unit === 'kg' ? 1000 : 1;
+      const unitPrice = pricePerGram * buyerUnitGrams;
 
       subtotal += itemTotal;
 
@@ -70,7 +75,7 @@ export const getCheckoutSummary = async (req, res, next) => {
         },
         quantity: item.quantity,
         unit: item.unit,
-        unitPrice: pricePerGram * (item.unit === 'kg' ? 1000 : 1),
+        unitPrice: unitPrice,
         totalPrice: itemTotal
       });
     }
@@ -141,21 +146,27 @@ export const completeCheckout = async (req, res, next) => {
       const selection = item.selections[0];
       const vendorProduct = selection.vendorProduct;
 
-      const vpGrams = vendorProduct.unit === 'kg' 
-        ? parseFloat(vendorProduct.quantity) * 1000 
-        : parseFloat(vendorProduct.quantity);
+      // Calculate price for the quantity user needs
+      // vendorProduct.price is now stored as price per unit (vendor's unit)
       const itemGrams = item.unit === 'kg' 
         ? parseFloat(item.quantity) * 1000 
         : parseFloat(item.quantity);
-      const pricePerGram = parseFloat(vendorProduct.price) / vpGrams;
+      
+      // Convert vendor's price per unit to price per gram
+      const vpUnitGrams = vendorProduct.unit === 'kg' ? 1000 : 1;
+      const pricePerGram = parseFloat(vendorProduct.price) / vpUnitGrams;
       const itemTotal = pricePerGram * itemGrams;
+      
+      // Calculate unit price for display (per buyer's unit)
+      const buyerUnitGrams = item.unit === 'kg' ? 1000 : 1;
+      const unitPrice = pricePerGram * buyerUnitGrams;
 
       subtotal += itemTotal;
 
       orderItemsData.push({
         vendorProductId: vendorProduct.id,
         quantity: parseFloat(item.quantity),
-        unitPrice: pricePerGram * (item.unit === 'kg' ? 1000 : 1),
+        unitPrice: unitPrice,
         totalPrice: itemTotal
       });
     }

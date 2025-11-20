@@ -3,12 +3,12 @@ import path from 'path';
 
 export const createProduct = async (req, res, next) => {
   try {
-    const { productId, quantity, unit, price, origin } = req.body;
+    const { productId, unit, pricePerUnit, origin, quantity } = req.body;
     const vendorId = req.user.userId;
 
-    if (!productId || !quantity || !unit || !price || !origin) {
+    if (!productId || !unit || !pricePerUnit || !origin) {
       return res.status(400).json({ 
-        error: 'Product ID, quantity, unit, price, and origin are required' 
+        error: 'Product ID, unit, price per unit, and origin are required' 
       });
     }
 
@@ -37,14 +37,19 @@ export const createProduct = async (req, res, next) => {
     // Create image URL (relative path)
     const imageUrl = `/uploads/${req.file.filename}`;
 
+    // Set default quantity if not provided (for stock tracking)
+    // We use a large number to indicate "available" - vendors can update this later
+    const stockQuantity = quantity ? parseFloat(quantity) : (unit === 'kg' ? 1000 : 1000000);
+
     // Create vendor product
+    // Note: We store pricePerUnit in the price field, and quantity for stock tracking
     const vendorProduct = await prisma.vendorProduct.create({
       data: {
         vendorId,
         productId,
-        quantity: parseFloat(quantity),
+        quantity: stockQuantity, // Stock quantity (hidden from form, but needed for availability)
         unit,
-        price: parseFloat(price),
+        price: parseFloat(pricePerUnit), // This is now price per unit
         origin,
         imageUrl
       },
@@ -135,7 +140,7 @@ export const updateProduct = async (req, res, next) => {
   try {
     const { id } = req.params;
     const vendorId = req.user.userId;
-    const { quantity, unit, price, origin, isActive } = req.body;
+    const { unit, pricePerUnit, origin, isActive, quantity } = req.body;
 
     // Verify product belongs to vendor
     const existingProduct = await prisma.vendorProduct.findFirst({
@@ -153,7 +158,7 @@ export const updateProduct = async (req, res, next) => {
     const updateData = {};
     if (quantity !== undefined) updateData.quantity = parseFloat(quantity);
     if (unit !== undefined) updateData.unit = unit;
-    if (price !== undefined) updateData.price = parseFloat(price);
+    if (pricePerUnit !== undefined) updateData.price = parseFloat(pricePerUnit); // Store as price per unit
     if (origin !== undefined) updateData.origin = origin;
     if (isActive !== undefined) updateData.isActive = isActive === 'true' || isActive === true;
 

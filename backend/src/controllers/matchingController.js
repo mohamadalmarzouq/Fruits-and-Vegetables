@@ -77,15 +77,22 @@ export const getMatchingProducts = async (req, res, next) => {
       areUnitsCompatible(item.unit, vp.unit, item.quantity, vp.quantity)
     );
 
-    // Calculate price per unit for comparison
+    // Calculate total price based on price per unit
+    // vp.price is now stored as price per unit (in the vendor's unit)
     const productsWithPricePerUnit = vendorProducts.map(vp => {
-      const vpGrams = convertToGrams(vp.quantity, vp.unit);
       const itemGrams = convertToGrams(item.quantity, item.unit);
-      const pricePerGram = parseFloat(vp.price) / vpGrams;
+      const vpUnitGrams = vp.unit === 'kg' ? 1000 : 1;
+      
+      // Price per unit is stored in vp.price (per vendor's unit)
+      // Convert to price per gram
+      const pricePerGram = parseFloat(vp.price) / vpUnitGrams;
+      
+      // Calculate total price for buyer's quantity
       const totalPrice = pricePerGram * itemGrams;
 
       return {
         ...vp,
+        pricePerUnit: parseFloat(vp.price), // Price per vendor's unit
         pricePerGram,
         totalPrice,
         availableQuantity: vp.quantity,

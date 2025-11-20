@@ -9,9 +9,8 @@ const VendorDashboard = () => {
   const [showForm, setShowForm] = useState(false);
   const [formData, setFormData] = useState({
     productId: '',
-    quantity: '',
     unit: 'kg',
-    price: '',
+    pricePerUnit: '',
     origin: ''
   });
   const [catalog, setCatalog] = useState([]);
@@ -56,9 +55,8 @@ const VendorDashboard = () => {
 
     const formDataToSend = new FormData();
     formDataToSend.append('productId', formData.productId);
-    formDataToSend.append('quantity', formData.quantity);
     formDataToSend.append('unit', formData.unit);
-    formDataToSend.append('price', formData.price);
+    formDataToSend.append('pricePerUnit', formData.pricePerUnit);
     formDataToSend.append('origin', formData.origin);
     formDataToSend.append('image', image);
 
@@ -71,9 +69,8 @@ const VendorDashboard = () => {
       setSuccess('Product uploaded successfully!');
       setFormData({
         productId: '',
-        quantity: '',
         unit: 'kg',
-        price: '',
+        pricePerUnit: '',
         origin: ''
       });
       setImage(null);
@@ -169,18 +166,6 @@ const VendorDashboard = () => {
 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700">Quantity</label>
-                    <input
-                      type="number"
-                      step="0.01"
-                      required
-                      value={formData.quantity}
-                      onChange={(e) => setFormData({ ...formData, quantity: e.target.value })}
-                      className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2"
-                      placeholder="e.g., 500"
-                    />
-                  </div>
-                  <div>
                     <label className="block text-sm font-medium text-gray-700">Unit</label>
                     <select
                       required
@@ -192,32 +177,33 @@ const VendorDashboard = () => {
                       <option value="gram">Gram</option>
                     </select>
                   </div>
-                </div>
-
-                <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700">Price (KWD)</label>
+                    <label className="block text-sm font-medium text-gray-700">Price Per Unit (KWD)</label>
                     <input
                       type="number"
                       step="0.01"
                       required
-                      value={formData.price}
-                      onChange={(e) => setFormData({ ...formData, price: e.target.value })}
+                      value={formData.pricePerUnit}
+                      onChange={(e) => setFormData({ ...formData, pricePerUnit: e.target.value })}
                       className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2"
-                      placeholder="e.g., 1.50"
+                      placeholder={formData.unit === 'kg' ? 'e.g., 1.50 per kg' : 'e.g., 0.0015 per gram'}
                     />
+                    <p className="mt-1 text-xs text-gray-500">
+                      Price per {formData.unit}
+                    </p>
                   </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700">Origin</label>
-                    <input
-                      type="text"
-                      required
-                      value={formData.origin}
-                      onChange={(e) => setFormData({ ...formData, origin: e.target.value })}
-                      className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2"
-                      placeholder="e.g., Spain, Turkey"
-                    />
-                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">Origin</label>
+                  <input
+                    type="text"
+                    required
+                    value={formData.origin}
+                    onChange={(e) => setFormData({ ...formData, origin: e.target.value })}
+                    className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2"
+                    placeholder="e.g., Spain, Turkey"
+                  />
                 </div>
 
                 <div>
@@ -260,7 +246,10 @@ const VendorDashboard = () => {
                         <div>
                           <h3 className="text-lg font-medium">{product.product.name}</h3>
                           <p className="text-sm text-gray-500">
-                            {product.quantity} {product.unit} • {product.origin} • {product.price} KWD
+                            {product.origin} • {product.price} KWD per {product.unit}
+                          </p>
+                          <p className="text-xs text-gray-400 mt-1">
+                            Stock: {product.quantity} {product.unit}
                           </p>
                           <p className={`text-xs mt-1 ${product.isActive ? 'text-green-600' : 'text-red-600'}`}>
                             {product.isActive ? 'Active' : 'Inactive'}
