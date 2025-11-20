@@ -10,6 +10,7 @@ import authRoutes from './routes/auth.js';
 import vendorProductRoutes from './routes/vendorProducts.js';
 import productRoutes from './routes/products.js';
 import adminRoutes from './routes/admin.js';
+import buyerRoutes from './routes/buyer.js';
 
 dotenv.config();
 
@@ -36,6 +37,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/vendor/products', vendorProductRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/buyer', buyerRoutes);
 
 // Health check
 app.get('/api/health', (req, res) => {

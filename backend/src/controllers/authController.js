@@ -101,6 +101,54 @@ export const login = async (req, res, next) => {
   }
 };
 
+export const registerBuyer = async (req, res, next) => {
+  try {
+    const { email, password } = req.body;
+
+    if (!email || !password) {
+      return res.status(400).json({ error: 'Email and password are required' });
+    }
+
+    if (password.length < 6) {
+      return res.status(400).json({ error: 'Password must be at least 6 characters' });
+    }
+
+    // Check if user already exists
+    const existingUser = await prisma.user.findUnique({
+      where: { email }
+    });
+
+    if (existingUser) {
+      return res.status(400).json({ error: 'Email already registered' });
+    }
+
+    // Hash password
+    const passwordHash = await hashPassword(password);
+
+    // Create buyer user
+    const user = await prisma.user.create({
+      data: {
+        email,
+        passwordHash,
+        role: 'buyer'
+      },
+      select: {
+        id: true,
+        email: true,
+        role: true,
+        createdAt: true
+      }
+    });
+
+    res.status(201).json({
+      message: 'Buyer registration successful',
+      user
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 export const getProfile = async (req, res, next) => {
   try {
     const user = await prisma.user.findUnique({

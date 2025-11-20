@@ -37,9 +37,10 @@ const Login = () => {
           localStorage.removeItem('token');
           localStorage.removeItem('user');
         }
+      } else if (user.role === 'buyer') {
+        navigate('/buyer/dashboard');
       } else {
-        // Future: buyer role
-        navigate('/vendor/dashboard');
+        navigate('/login');
       }
     } else {
       setError(result.error);
