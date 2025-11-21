@@ -127,19 +127,28 @@ const BuyerDashboard = () => {
                         </div>
                       </div>
                       <div className="flex space-x-2">
-                        <Link
-                          to={list.status === 'completed' ? `/buyer/shopping-lists/${list.id}/receipt` : `/buyer/shopping-lists/${list.id}`}
-                          className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 text-sm"
-                        >
-                          {list.status === 'completed' ? 'View Receipt' : 'Open'}
-                        </Link>
-                        {list.status === 'draft' && (
-                          <button
-                            onClick={() => deleteShoppingList(list.id)}
-                            className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 text-sm"
+                        {list.status === 'completed' ? (
+                          <Link
+                            to={`/buyer/orders/${list.id}/receipt`}
+                            className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 text-sm"
                           >
-                            Delete
-                          </button>
+                            View Receipt
+                          </Link>
+                        ) : (
+                          <>
+                            <Link
+                              to={`/buyer/shopping-lists/${list.id}`}
+                              className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 text-sm"
+                            >
+                              Open
+                            </Link>
+                            <button
+                              onClick={() => deleteShoppingList(list.id)}
+                              className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 text-sm"
+                            >
+                              Delete
+                            </button>
+                          </>
                         )}
                       </div>
                     </div>
