@@ -40,6 +40,7 @@ export const getMatchingProducts = async (req, res, next) => {
     }
 
     // Find all active vendor products matching the product
+    // Show ALL origins for the product, not filtered by origin preference
     let vendorProducts = await prisma.vendorProduct.findMany({
       where: {
         productId: item.productId,
@@ -65,12 +66,8 @@ export const getMatchingProducts = async (req, res, next) => {
       }
     });
 
-    // Filter by origin preference if specified
-    if (item.originPreference) {
-      vendorProducts = vendorProducts.filter(
-        vp => vp.origin.toLowerCase() === item.originPreference.toLowerCase()
-      );
-    }
+    // Note: Origin preference is saved but does NOT filter the available options
+    // Buyers can see all origins and choose based on price and preference
 
     // Filter by quantity availability (vendor must have enough)
     vendorProducts = vendorProducts.filter(vp =>
