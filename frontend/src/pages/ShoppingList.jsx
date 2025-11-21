@@ -35,7 +35,15 @@ const ShoppingList = () => {
   const fetchShoppingList = async () => {
     try {
       const response = await api.get(`/buyer/shopping-lists/${id}`);
-      setShoppingList(response.data.shoppingList);
+      const list = response.data.shoppingList;
+      
+      // If order is completed, redirect to receipt page
+      if (list.status === 'completed') {
+        navigate(`/buyer/orders/${id}/receipt`);
+        return;
+      }
+      
+      setShoppingList(list);
     } catch (error) {
       console.error('Error fetching shopping list:', error);
     } finally {

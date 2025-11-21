@@ -14,6 +14,7 @@ import BuyerDashboard from './pages/BuyerDashboard';
 import ShoppingList from './pages/ShoppingList';
 import ProductOptions from './pages/ProductOptions';
 import Checkout from './pages/Checkout';
+import OrderReceipt from './pages/OrderReceipt';
 import Receipt from './pages/Receipt';
 
 function App() {
@@ -102,6 +103,14 @@ function App() {
             element={
               <BuyerProtectedRoute>
                 <Checkout />
+              </BuyerProtectedRoute>
+            }
+          />
+          <Route
+            path="/buyer/orders/:id/receipt"
+            element={
+              <BuyerProtectedRoute>
+                <OrderReceipt />
               </BuyerProtectedRoute>
             }
           />

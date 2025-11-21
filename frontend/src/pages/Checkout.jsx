@@ -38,8 +38,8 @@ const Checkout = () => {
 
     try {
       const response = await api.post(`/buyer/shopping-lists/${id}/checkout`);
-      alert('Order completed successfully!');
-      navigate('/buyer/dashboard');
+      // Redirect to receipt page after successful checkout
+      navigate(`/buyer/orders/${id}/receipt`);
     } catch (error) {
       setError(error.response?.data?.error || 'Failed to complete checkout');
       setCompleting(false);
