@@ -253,10 +253,15 @@ const ShoppingList = () => {
                         <h3 className="text-lg font-medium">{item.product.name}</h3>
                         <p className="text-sm text-gray-500">
                           {item.quantity} {item.unit}
-                          {item.originPreference && ` • Origin: ${item.originPreference}`}
+                          {item.selections.length > 0 && item.selections[0].vendorProduct 
+                            ? ` • Origin: ${item.selections[0].vendorProduct.origin}`
+                            : (item.originPreference && ` • Preferred: ${item.originPreference}`)
+                          }
                         </p>
                         {item.selections.length > 0 ? (
-                          <p className="text-sm text-green-600 mt-1">✓ Option selected</p>
+                          <p className="text-sm text-green-600 mt-1">
+                            ✓ Option selected ({item.selections[0].vendorProduct.price} KWD per {item.selections[0].vendorProduct.unit})
+                          </p>
                         ) : (
                           <p className="text-sm text-yellow-600 mt-1">⚠ No option selected</p>
                         )}

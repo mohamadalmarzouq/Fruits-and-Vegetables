@@ -97,7 +97,10 @@ const ProductOptions = () => {
             <h2 className="text-2xl font-bold text-gray-900">Available Options</h2>
             <p className="text-gray-600 mt-1">
               {item.product.name} • {item.quantity} {item.unit}
-              {item.originPreference && ` • Preferred: ${item.originPreference}`}
+              {item.originPreference && ` • Your Preference: ${item.originPreference}`}
+            </p>
+            <p className="text-sm text-gray-500 mt-1">
+              Showing all available origins - select the best option for you
             </p>
           </div>
 
