@@ -7,6 +7,7 @@ const VendorDashboard = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
+  const [editingProduct, setEditingProduct] = useState(null);
   const [formData, setFormData] = useState({
     productId: '',
     unit: 'kg',
@@ -48,25 +49,48 @@ const VendorDashboard = () => {
     setError('');
     setSuccess('');
 
-    if (!image) {
+    // For create: image is required. For edit: image is optional
+    if (!editingProduct && !image) {
       setError('Please select an image');
       return;
     }
 
     const formDataToSend = new FormData();
-    formDataToSend.append('productId', formData.productId);
-    formDataToSend.append('unit', formData.unit);
-    formDataToSend.append('pricePerUnit', formData.pricePerUnit);
-    formDataToSend.append('origin', formData.origin);
-    formDataToSend.append('image', image);
+    
+    if (editingProduct) {
+      // Edit mode - only send changed fields
+      formDataToSend.append('unit', formData.unit);
+      formDataToSend.append('pricePerUnit', formData.pricePerUnit);
+      formDataToSend.append('origin', formData.origin);
+      if (image) {
+        formDataToSend.append('image', image);
+      }
+    } else {
+      // Create mode - send all fields
+      formDataToSend.append('productId', formData.productId);
+      formDataToSend.append('unit', formData.unit);
+      formDataToSend.append('pricePerUnit', formData.pricePerUnit);
+      formDataToSend.append('origin', formData.origin);
+      formDataToSend.append('image', image);
+    }
 
     try {
-      await api.post('/vendor/products', formDataToSend, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      });
-      setSuccess('Product uploaded successfully!');
+      if (editingProduct) {
+        await api.put(`/vendor/products/${editingProduct.id}`, formDataToSend, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        });
+        setSuccess('Product updated successfully!');
+      } else {
+        await api.post('/vendor/products', formDataToSend, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        });
+        setSuccess('Product uploaded successfully!');
+      }
+      
       setFormData({
         productId: '',
         unit: 'kg',
@@ -75,10 +99,39 @@ const VendorDashboard = () => {
       });
       setImage(null);
       setShowForm(false);
+      setEditingProduct(null);
       fetchProducts();
     } catch (error) {
-      setError(error.response?.data?.error || 'Failed to upload product');
+      setError(error.response?.data?.error || (editingProduct ? 'Failed to update product' : 'Failed to upload product'));
     }
+  };
+
+  const handleEdit = (product) => {
+    setEditingProduct(product);
+    setFormData({
+      productId: product.productId,
+      unit: product.unit,
+      pricePerUnit: product.price.toString(),
+      origin: product.origin
+    });
+    setImage(null);
+    setShowForm(true);
+    setError('');
+    setSuccess('');
+  };
+
+  const handleCancelEdit = () => {
+    setEditingProduct(null);
+    setFormData({
+      productId: '',
+      unit: 'kg',
+      pricePerUnit: '',
+      origin: ''
+    });
+    setImage(null);
+    setShowForm(false);
+    setError('');
+    setSuccess('');
   };
 
   const handleDelete = async (id) => {
@@ -136,7 +189,13 @@ const VendorDashboard = () => {
           <div className="mb-6 flex justify-between items-center">
             <h2 className="text-2xl font-bold text-gray-900">My Products</h2>
             <button
-              onClick={() => setShowForm(!showForm)}
+              onClick={() => {
+                if (showForm) {
+                  handleCancelEdit();
+                } else {
+                  setShowForm(true);
+                }
+              }}
               className="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700"
             >
               {showForm ? 'Cancel' : '+ Add Product'}
@@ -145,24 +204,40 @@ const VendorDashboard = () => {
 
           {showForm && (
             <div className="mb-6 bg-white shadow rounded-lg p-6">
-              <h3 className="text-lg font-semibold mb-4">Upload New Product</h3>
+              <h3 className="text-lg font-semibold mb-4">
+                {editingProduct ? 'Edit Product' : 'Upload New Product'}
+              </h3>
               <form onSubmit={handleSubmit} className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">Product</label>
-                  <select
-                    required
-                    value={formData.productId}
-                    onChange={(e) => setFormData({ ...formData, productId: e.target.value })}
-                    className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2"
-                  >
-                    <option value="">Select a product</option>
-                    {catalog.map((product) => (
-                      <option key={product.id} value={product.id}>
-                        {product.name} ({product.category})
-                      </option>
-                    ))}
-                  </select>
-                </div>
+                {!editingProduct && (
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700">Product</label>
+                    <select
+                      required
+                      value={formData.productId}
+                      onChange={(e) => setFormData({ ...formData, productId: e.target.value })}
+                      className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2"
+                    >
+                      <option value="">Select a product</option>
+                      {catalog.map((product) => (
+                        <option key={product.id} value={product.id}>
+                          {product.name} ({product.category})
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                )}
+                
+                {editingProduct && (
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700">Product</label>
+                    <input
+                      type="text"
+                      value={editingProduct.product.name}
+                      disabled
+                      className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 bg-gray-100"
+                    />
+                  </div>
+                )}
 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
@@ -211,17 +286,20 @@ const VendorDashboard = () => {
                   <input
                     type="file"
                     accept="image/*"
-                    required
+                    required={!editingProduct}
                     onChange={(e) => setImage(e.target.files[0])}
                     className="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100"
                   />
+                  {editingProduct && (
+                    <p className="text-xs text-gray-500 mt-1">Leave empty to keep current image</p>
+                  )}
                 </div>
 
                 <button
                   type="submit"
                   className="w-full bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700"
                 >
-                  Upload Product
+                  {editingProduct ? 'Update Product' : 'Upload Product'}
                 </button>
               </form>
             </div>
@@ -256,12 +334,20 @@ const VendorDashboard = () => {
                           </p>
                         </div>
                       </div>
-                      <button
-                        onClick={() => handleDelete(product.id)}
-                        className="text-red-600 hover:text-red-800 text-sm"
-                      >
-                        Delete
-                      </button>
+                      <div className="flex space-x-2">
+                        <button
+                          onClick={() => handleEdit(product)}
+                          className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 text-sm"
+                        >
+                          Edit
+                        </button>
+                        <button
+                          onClick={() => handleDelete(product.id)}
+                          className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 text-sm"
+                        >
+                          Delete
+                        </button>
+                      </div>
                     </div>
                   </li>
                 ))}

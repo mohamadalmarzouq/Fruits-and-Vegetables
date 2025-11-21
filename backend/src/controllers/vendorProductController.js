@@ -207,10 +207,18 @@ export const deleteProduct = async (req, res, next) => {
       return res.status(404).json({ error: 'Product not found' });
     }
 
-    // Soft delete (set isActive to false)
-    await prisma.vendorProduct.update({
-      where: { id },
-      data: { isActive: false }
+    // Delete related records first (if any exist)
+    await prisma.shoppingListSelection.deleteMany({
+      where: { vendorProductId: id }
+    });
+
+    await prisma.orderItem.deleteMany({
+      where: { vendorProductId: id }
+    });
+
+    // Now delete the product
+    await prisma.vendorProduct.delete({
+      where: { id }
     });
 
     res.json({ message: 'Product deleted successfully' });
