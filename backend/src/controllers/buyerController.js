@@ -183,6 +183,12 @@ export const removeItemFromShoppingList = async (req, res, next) => {
       return res.status(404).json({ error: 'Item not found' });
     }
 
+    // Delete selections first (if cascade isn't working yet)
+    await prisma.shoppingListSelection.deleteMany({
+      where: { shoppingListItemId: itemId }
+    });
+
+    // Then delete the item
     await prisma.shoppingListItem.delete({
       where: { id: itemId }
     });
@@ -210,6 +216,18 @@ export const deleteShoppingList = async (req, res, next) => {
       return res.status(404).json({ error: 'Shopping list not found' });
     }
 
+    // Delete all related records first (in case cascade isn't working yet)
+    // 1. Delete all selections
+    await prisma.shoppingListSelection.deleteMany({
+      where: { shoppingListId: id }
+    });
+
+    // 2. Delete all items
+    await prisma.shoppingListItem.deleteMany({
+      where: { shoppingListId: id }
+    });
+
+    // 3. Finally delete the shopping list
     await prisma.shoppingList.delete({
       where: { id }
     });

@@ -122,7 +122,7 @@ model ShoppingListItem {
   createdAt        DateTime @default(now()) @map("created_at")
 
   // Relations
-  shoppingList     ShoppingList           @relation(fields: [shoppingListId], references: [id])
+  shoppingList     ShoppingList           @relation(fields: [shoppingListId], references: [id], onDelete: Cascade)
   product          Product                @relation(fields: [productId], references: [id])
   selections       ShoppingListSelection[]
 
