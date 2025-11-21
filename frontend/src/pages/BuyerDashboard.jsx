@@ -105,7 +105,7 @@ const BuyerDashboard = () => {
                     <div className="flex items-center justify-between">
                       <div className="flex-1">
                         <Link
-                          to={`/buyer/shopping-lists/${list.id}`}
+                          to={list.status === 'completed' ? `/buyer/shopping-lists/${list.id}/receipt` : `/buyer/shopping-lists/${list.id}`}
                           className="text-lg font-medium text-indigo-600 hover:text-indigo-800"
                         >
                           Shopping List #{list.id.slice(0, 8)}
@@ -114,15 +114,24 @@ const BuyerDashboard = () => {
                           Created: {new Date(list.createdAt).toLocaleDateString()}
                         </p>
                         <p className="text-sm text-gray-500">
-                          Items: {list._count?.items || 0} • Status: {list.status}
+                          Items: {list._count?.items || 0}
                         </p>
+                        <div className="mt-1">
+                          <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
+                            list.status === 'completed' 
+                              ? 'bg-green-100 text-green-800' 
+                              : 'bg-yellow-100 text-yellow-800'
+                          }`}>
+                            {list.status === 'completed' ? '✓ Completed' : '⋯ Draft'}
+                          </span>
+                        </div>
                       </div>
                       <div className="flex space-x-2">
                         <Link
-                          to={`/buyer/shopping-lists/${list.id}`}
+                          to={list.status === 'completed' ? `/buyer/shopping-lists/${list.id}/receipt` : `/buyer/shopping-lists/${list.id}`}
                           className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 text-sm"
                         >
-                          Open
+                          {list.status === 'completed' ? 'View Receipt' : 'Open'}
                         </Link>
                         {list.status === 'draft' && (
                           <button
