@@ -4,7 +4,8 @@ import {
   getMyProducts, 
   getProduct, 
   updateProduct, 
-  deleteProduct 
+  deleteProduct,
+  toggleStockStatus
 } from '../controllers/vendorProductController.js';
 import { authenticate, requireRole } from '../middleware/auth.js';
 import { upload } from '../middleware/upload.js';
@@ -43,6 +44,7 @@ router.post('/', upload.single('image'), createProduct);
 router.get('/', getMyProducts);
 router.get('/:id', getProduct);
 router.put('/:id', upload.single('image'), updateProduct);
+router.patch('/:id/toggle-stock', toggleStockStatus);
 router.delete('/:id', deleteProduct);
 
 export default router;

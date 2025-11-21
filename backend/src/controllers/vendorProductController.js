@@ -227,3 +227,44 @@ export const deleteProduct = async (req, res, next) => {
   }
 };
 
+export const toggleStockStatus = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const vendorId = req.user.userId;
+
+    // Verify product belongs to vendor
+    const product = await prisma.vendorProduct.findFirst({
+      where: {
+        id,
+        vendorId
+      }
+    });
+
+    if (!product) {
+      return res.status(404).json({ error: 'Product not found' });
+    }
+
+    // Toggle isActive status
+    const updatedProduct = await prisma.vendorProduct.update({
+      where: { id },
+      data: { isActive: !product.isActive },
+      include: {
+        product: {
+          select: {
+            id: true,
+            name: true,
+            category: true
+          }
+        }
+      }
+    });
+
+    res.json({
+      message: `Product ${updatedProduct.isActive ? 'is now in stock' : 'is now out of stock'}`,
+      product: updatedProduct
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
