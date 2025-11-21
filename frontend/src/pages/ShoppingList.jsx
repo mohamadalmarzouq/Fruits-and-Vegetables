@@ -25,13 +25,6 @@ const ShoppingList = () => {
     fetchCatalog();
   }, [id]);
 
-  // Redirect to checkout/receipt if order is completed
-  useEffect(() => {
-    if (shoppingList && shoppingList.status === 'completed') {
-      navigate(`/buyer/shopping-lists/${id}/receipt`);
-    }
-  }, [shoppingList, id, navigate]);
-
   const fetchShoppingList = async () => {
     try {
       const response = await api.get(`/buyer/shopping-lists/${id}`);
