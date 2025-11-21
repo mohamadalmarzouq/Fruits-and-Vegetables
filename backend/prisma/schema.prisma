@@ -137,8 +137,8 @@ model ShoppingListSelection {
   createdAt          DateTime @default(now()) @map("created_at")
 
   // Relations
-  shoppingList     ShoppingList     @relation(fields: [shoppingListId], references: [id])
-  shoppingListItem ShoppingListItem @relation(fields: [shoppingListItemId], references: [id])
+  shoppingList     ShoppingList     @relation(fields: [shoppingListId], references: [id], onDelete: Cascade)
+  shoppingListItem ShoppingListItem @relation(fields: [shoppingListItemId], references: [id], onDelete: Cascade)
   vendorProduct    VendorProduct    @relation(fields: [vendorProductId], references: [id])
 
   @@map("shopping_list_selections")
