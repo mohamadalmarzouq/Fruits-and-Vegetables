@@ -40,3 +40,39 @@ export const getProduct = async (req, res, next) => {
   }
 };
 
+// Get public vendor products for homepage (only active products from approved vendors)
+export const getPublicVendorProducts = async (req, res, next) => {
+  try {
+    const vendorProducts = await prisma.vendorProduct.findMany({
+      where: {
+        isActive: true,
+        vendor: {
+          vendorStatus: 'approved'
+        }
+      },
+      include: {
+        product: {
+          select: {
+            id: true,
+            name: true,
+            category: true
+          }
+        },
+        vendor: {
+          select: {
+            id: true,
+            vendorStatus: true
+          }
+        }
+      },
+      orderBy: {
+        price: 'asc'
+      }
+    });
+
+    res.json({ products: vendorProducts });
+  } catch (error) {
+    next(error);
+  }
+};
+

@@ -1,5 +1,6 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
+import Home from './pages/Home';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import VendorDashboard from './pages/VendorDashboard';
@@ -22,6 +23,9 @@ function App() {
     <AuthProvider>
       <Router>
         <Routes>
+          {/* Home/Landing Page */}
+          <Route path="/" element={<Home />} />
+          
           {/* Unified Login - Works for both vendors and admins */}
           <Route path="/login" element={<Login />} />
           <Route path="/vendor/login" element={<Login />} />
@@ -123,8 +127,6 @@ function App() {
             }
           />
           
-          {/* Default redirect to login */}
-          <Route path="/" element={<Navigate to="/login" replace />} />
         </Routes>
       </Router>
     </AuthProvider>

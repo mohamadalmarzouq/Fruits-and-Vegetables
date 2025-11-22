@@ -1,10 +1,20 @@
-import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import api from '../utils/api';
 
 const Register = () => {
-  const [registerType, setRegisterType] = useState('vendor'); // 'vendor' or 'buyer'
+  const [searchParams] = useSearchParams();
+  const roleFromUrl = searchParams.get('role');
+  const [registerType, setRegisterType] = useState(roleFromUrl === 'vendor' ? 'vendor' : 'buyer'); // 'vendor' or 'buyer'
+  
+  useEffect(() => {
+    if (roleFromUrl === 'vendor') {
+      setRegisterType('vendor');
+    } else if (roleFromUrl === 'buyer') {
+      setRegisterType('buyer');
+    }
+  }, [roleFromUrl]);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
