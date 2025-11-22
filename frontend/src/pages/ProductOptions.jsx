@@ -13,6 +13,7 @@ const ProductOptions = () => {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
+  const [selectedImage, setSelectedImage] = useState(null);
 
   useEffect(() => {
     fetchOptions();
@@ -140,11 +141,19 @@ const ProductOptions = () => {
                 >
                   <div className="space-y-4">
                     <div className="flex items-start space-x-4">
-                      <img
-                        src={option.imageUrl.startsWith('http') ? option.imageUrl : `${import.meta.env.VITE_API_URL?.replace('/api', '') || 'http://localhost:5000'}${option.imageUrl}`}
-                        alt={option.product.name}
-                        className="h-32 w-32 object-cover rounded-lg"
-                      />
+                      <div className="relative group">
+                        <img
+                          src={option.imageUrl.startsWith('http') ? option.imageUrl : `${import.meta.env.VITE_API_URL?.replace('/api', '') || 'http://localhost:5000'}${option.imageUrl}`}
+                          alt={option.product.name}
+                          className="h-32 w-32 object-cover rounded-lg cursor-pointer hover:opacity-90 transition border-2 border-gray-200 hover:border-green-500"
+                          onClick={() => setSelectedImage(option.imageUrl.startsWith('http') ? option.imageUrl : `${import.meta.env.VITE_API_URL?.replace('/api', '') || 'http://localhost:5000'}${option.imageUrl}`)}
+                        />
+                        <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-10 rounded-lg transition flex items-center justify-center">
+                          <span className="text-white opacity-0 group-hover:opacity-100 text-xs font-semibold bg-green-600 px-2 py-1 rounded">
+                            Click to enlarge
+                          </span>
+                        </div>
+                      </div>
                       <div className="flex-1">
                         <div className="flex items-start justify-between mb-2">
                           <h3 className="text-xl font-bold text-gray-900">{option.product.name}</h3>
@@ -204,6 +213,42 @@ const ProductOptions = () => {
           )}
         </div>
       </div>
+
+      {/* Image Modal/Lightbox */}
+      {selectedImage && (
+        <div
+          className="fixed inset-0 bg-black bg-opacity-75 z-50 flex items-center justify-center p-4"
+          onClick={() => setSelectedImage(null)}
+        >
+          <div className="relative max-w-4xl max-h-[90vh] w-full">
+            <button
+              onClick={() => setSelectedImage(null)}
+              className="absolute top-4 right-4 text-white bg-black bg-opacity-50 hover:bg-opacity-75 rounded-full p-2 transition z-10"
+              aria-label="Close image"
+            >
+              <svg
+                className="w-6 h-6"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              </svg>
+            </button>
+            <img
+              src={selectedImage}
+              alt="Product image"
+              className="max-w-full max-h-[90vh] object-contain rounded-lg shadow-2xl"
+              onClick={(e) => e.stopPropagation()}
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 };
