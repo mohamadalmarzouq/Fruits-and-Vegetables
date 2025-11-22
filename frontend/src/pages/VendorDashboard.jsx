@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import api from '../utils/api';
 
@@ -163,18 +164,22 @@ const VendorDashboard = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <nav className="bg-white shadow">
+    <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-green-50">
+      {/* Header */}
+      <nav className="bg-gradient-to-r from-green-600 to-green-700 shadow-lg">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between h-16">
-            <div className="flex items-center">
-              <h1 className="text-xl font-semibold">Vendor Dashboard</h1>
+            <div className="flex items-center space-x-4">
+              <Link to="/" className="text-2xl font-bold text-white">
+                FreshSavor
+              </Link>
+              <span className="text-green-100 text-sm">Vendor Dashboard</span>
             </div>
             <div className="flex items-center space-x-4">
-              <span className="text-sm text-gray-700">{user?.email}</span>
+              <span className="text-sm text-white">{user?.email}</span>
               <button
                 onClick={logout}
-                className="text-sm text-indigo-600 hover:text-indigo-500"
+                className="text-sm text-white hover:text-green-100 font-medium"
               >
                 Logout
               </button>
@@ -183,19 +188,32 @@ const VendorDashboard = () => {
         </div>
       </nav>
 
-      <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-        <div className="px-4 py-6 sm:px-0">
+      {/* Main Content */}
+      <div className="max-w-7xl mx-auto py-8 sm:px-6 lg:px-8">
+        <div className="px-4 sm:px-0">
+          {/* Welcome Section */}
+          <div className="mb-8">
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">
+              Manage Your Products 🛍️
+            </h1>
+            <p className="text-gray-600">
+              Upload and manage your fresh produce inventory
+            </p>
+          </div>
+
+          {/* Messages */}
           {error && (
-            <div className="mb-4 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
+            <div className="mb-6 bg-red-50 border-l-4 border-red-500 text-red-700 px-4 py-3 rounded-lg shadow">
               {error}
             </div>
           )}
           {success && (
-            <div className="mb-4 bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded">
+            <div className="mb-6 bg-green-50 border-l-4 border-green-500 text-green-700 px-4 py-3 rounded-lg shadow">
               {success}
             </div>
           )}
 
+          {/* Action Bar */}
           <div className="mb-6 flex justify-between items-center">
             <h2 className="text-2xl font-bold text-gray-900">My Products</h2>
             <button
@@ -206,16 +224,17 @@ const VendorDashboard = () => {
                   setShowForm(true);
                 }
               }}
-              className="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700"
+              className="bg-green-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-green-700 transition shadow-lg hover:shadow-xl flex items-center space-x-2"
             >
-              {showForm ? 'Cancel' : '+ Add Product'}
+              <span>{showForm ? '✕' : '+'}</span>
+              <span>{showForm ? 'Cancel' : 'Add Product'}</span>
             </button>
           </div>
 
           {showForm && (
-            <div className="mb-6 bg-white shadow rounded-lg p-6">
-              <h3 className="text-lg font-semibold mb-4">
-                {editingProduct ? 'Edit Product' : 'Upload New Product'}
+            <div className="mb-6 bg-white shadow-lg rounded-xl p-6 border border-gray-100">
+              <h3 className="text-xl font-bold mb-6 text-gray-900">
+                {editingProduct ? '✏️ Edit Product' : '➕ Upload New Product'}
               </h3>
               <form onSubmit={handleSubmit} className="space-y-4">
                 {!editingProduct && (
@@ -298,7 +317,7 @@ const VendorDashboard = () => {
                     accept="image/*"
                     required={!editingProduct}
                     onChange={(e) => setImage(e.target.files[0])}
-                    className="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100"
+                    className="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-green-50 file:text-green-700 hover:file:bg-green-100"
                   />
                   {editingProduct && (
                     <p className="text-xs text-gray-500 mt-1">Leave empty to keep current image</p>
@@ -324,73 +343,87 @@ const VendorDashboard = () => {
 
                 <button
                   type="submit"
-                  className="w-full bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700"
+                  className="w-full bg-green-600 text-white px-4 py-3 rounded-lg font-semibold hover:bg-green-700 transition shadow-lg hover:shadow-xl"
                 >
-                  {editingProduct ? 'Update Product' : 'Upload Product'}
+                  {editingProduct ? '✓ Update Product' : '✓ Upload Product'}
                 </button>
               </form>
             </div>
           )}
 
-          <div className="bg-white shadow overflow-hidden sm:rounded-md">
-            {products.length === 0 ? (
-              <div className="p-6 text-center text-gray-500">
-                No products yet. Click "Add Product" to get started.
-              </div>
-            ) : (
-              <ul className="divide-y divide-gray-200">
-                {products.map((product) => (
-                  <li key={product.id} className="p-6">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center space-x-4">
-                        <img
-                          src={product.imageUrl.startsWith('http') ? product.imageUrl : `${import.meta.env.VITE_API_URL?.replace('/api', '') || 'http://localhost:5000'}${product.imageUrl}`}
-                          alt={product.product.name}
-                          className="h-20 w-20 object-cover rounded"
-                        />
-                        <div>
-                          <h3 className="text-lg font-medium">{product.product.name}</h3>
-                          <p className="text-sm text-gray-500">
-                            {product.origin} • {product.price} KWD per {product.unit}
-                          </p>
-                          <p className="text-xs text-gray-400 mt-1">
-                            Stock: {product.quantity} {product.unit}
-                          </p>
-                          <span className={`inline-block text-xs mt-1 px-2 py-1 rounded ${product.isActive ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
-                            {product.isActive ? '✓ In Stock' : '✗ Out of Stock'}
-                          </span>
-                        </div>
-                      </div>
-                      <div className="flex space-x-2">
-                        <button
-                          onClick={() => handleToggleStock(product.id, product.isActive)}
-                          className={`px-4 py-2 rounded-md text-white text-sm ${
-                            product.isActive 
-                              ? 'bg-yellow-600 hover:bg-yellow-700' 
-                              : 'bg-green-600 hover:bg-green-700'
-                          }`}
-                        >
-                          {product.isActive ? 'Out of Stock' : 'In Stock'}
-                        </button>
-                        <button
-                          onClick={() => handleEdit(product)}
-                          className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 text-sm"
-                        >
-                          Edit
-                        </button>
-                        <button
-                          onClick={() => handleDelete(product.id)}
-                          className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 text-sm"
-                        >
-                          Delete
-                        </button>
-                      </div>
+          {products.length === 0 ? (
+            <div className="bg-white shadow-lg rounded-xl p-12 text-center border-2 border-dashed border-gray-300">
+              <div className="text-6xl mb-4">📦</div>
+              <p className="text-xl text-gray-700 mb-2 font-semibold">
+                No products yet
+              </p>
+              <p className="text-gray-500 mb-6">
+                Click "Add Product" to start uploading your inventory
+              </p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {products.map((product) => (
+                <div
+                  key={product.id}
+                  className="bg-white rounded-xl shadow-lg hover:shadow-xl transition p-6 border border-gray-100"
+                >
+                  <div className="mb-4">
+                    <img
+                      src={product.imageUrl.startsWith('http') ? product.imageUrl : `${import.meta.env.VITE_API_URL?.replace('/api', '') || 'http://localhost:5000'}${product.imageUrl}`}
+                      alt={product.product.name}
+                      className="h-48 w-full object-cover rounded-lg mb-4"
+                    />
+                    <div className="flex items-start justify-between mb-2">
+                      <h3 className="text-lg font-bold text-gray-900">{product.product.name}</h3>
+                      <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold ${
+                        product.isActive 
+                          ? 'bg-green-100 text-green-800' 
+                          : 'bg-red-100 text-red-800'
+                      }`}>
+                        {product.isActive ? '✓ In Stock' : '✗ Out of Stock'}
+                      </span>
                     </div>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </div>
+                    <p className="text-sm text-gray-600 mb-1">
+                      <span className="font-medium">📍</span> {product.origin}
+                    </p>
+                    <p className="text-lg font-bold text-green-600 mb-1">
+                      {product.price} KWD per {product.unit}
+                    </p>
+                    <p className="text-xs text-gray-400">
+                      Stock: {product.quantity} {product.unit}
+                    </p>
+                  </div>
+                  <div className="flex flex-col space-y-2 pt-4 border-t border-gray-100">
+                    <button
+                      onClick={() => handleToggleStock(product.id, product.isActive)}
+                      className={`w-full px-4 py-2 rounded-lg text-white text-sm font-medium transition ${
+                        product.isActive 
+                          ? 'bg-yellow-600 hover:bg-yellow-700' 
+                          : 'bg-green-600 hover:bg-green-700'
+                      }`}
+                    >
+                      {product.isActive ? 'Mark Out of Stock' : 'Mark In Stock'}
+                    </button>
+                    <div className="grid grid-cols-2 gap-2">
+                      <button
+                        onClick={() => handleEdit(product)}
+                        className="px-4 py-2 bg-green-100 text-green-700 rounded-lg hover:bg-green-200 transition font-medium text-sm"
+                      >
+                        ✏️ Edit
+                      </button>
+                      <button
+                        onClick={() => handleDelete(product.id)}
+                        className="px-4 py-2 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 transition font-medium text-sm"
+                      >
+                        🗑️ Delete
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </div>

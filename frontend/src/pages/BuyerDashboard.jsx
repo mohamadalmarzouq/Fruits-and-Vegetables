@@ -55,18 +55,22 @@ const BuyerDashboard = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <nav className="bg-white shadow">
+    <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-green-50">
+      {/* Header */}
+      <nav className="bg-gradient-to-r from-green-600 to-green-700 shadow-lg">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between h-16">
-            <div className="flex items-center">
-              <h1 className="text-xl font-semibold">Buyer Dashboard</h1>
+            <div className="flex items-center space-x-4">
+              <Link to="/" className="text-2xl font-bold text-white">
+                FreshSavor
+              </Link>
+              <span className="text-green-100 text-sm">Buyer Dashboard</span>
             </div>
             <div className="flex items-center space-x-4">
-              <span className="text-sm text-gray-700">{user?.email}</span>
+              <span className="text-sm text-white">{user?.email}</span>
               <button
                 onClick={logout}
-                className="text-sm text-indigo-600 hover:text-indigo-500"
+                className="text-sm text-white hover:text-green-100 font-medium"
               >
                 Logout
               </button>
@@ -75,86 +79,118 @@ const BuyerDashboard = () => {
         </div>
       </nav>
 
-      <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-        <div className="px-4 py-6 sm:px-0">
+      {/* Main Content */}
+      <div className="max-w-7xl mx-auto py-8 sm:px-6 lg:px-8">
+        <div className="px-4 sm:px-0">
+          {/* Welcome Section */}
+          <div className="mb-8">
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">
+              Welcome back! 👋
+            </h1>
+            <p className="text-gray-600">
+              Manage your shopping lists and find the best prices on fresh produce
+            </p>
+          </div>
+
+          {/* Action Bar */}
           <div className="flex justify-between items-center mb-6">
             <h2 className="text-2xl font-bold text-gray-900">My Shopping Lists</h2>
             <button
               onClick={createShoppingList}
-              className="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700"
+              className="bg-green-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-green-700 transition shadow-lg hover:shadow-xl flex items-center space-x-2"
             >
-              + Create New List
+              <span>+</span>
+              <span>Create New List</span>
             </button>
           </div>
 
+          {/* Shopping Lists */}
           {shoppingLists.length === 0 ? (
-            <div className="bg-white shadow rounded-lg p-12 text-center">
-              <p className="text-gray-500 mb-4">You don't have any shopping lists yet.</p>
+            <div className="bg-white shadow-lg rounded-xl p-12 text-center border-2 border-dashed border-gray-300">
+              <div className="text-6xl mb-4">🛒</div>
+              <p className="text-xl text-gray-700 mb-2 font-semibold">
+                You don't have any shopping lists yet
+              </p>
+              <p className="text-gray-500 mb-6">
+                Create your first shopping list to start comparing prices
+              </p>
               <button
                 onClick={createShoppingList}
-                className="bg-indigo-600 text-white px-6 py-2 rounded-md hover:bg-indigo-700"
+                className="bg-green-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-green-700 transition shadow-lg hover:shadow-xl"
               >
                 Create Your First Shopping List
               </button>
             </div>
           ) : (
-            <div className="bg-white shadow overflow-hidden sm:rounded-md">
-              <ul className="divide-y divide-gray-200">
-                {shoppingLists.map((list) => (
-                  <li key={list.id} className="p-6">
-                    <div className="flex items-center justify-between">
-                      <div className="flex-1">
-                        <Link
-                          to={list.status === 'completed' ? `/buyer/shopping-lists/${list.id}/receipt` : `/buyer/shopping-lists/${list.id}`}
-                          className="text-lg font-medium text-indigo-600 hover:text-indigo-800"
-                        >
-                          Shopping List #{list.id.slice(0, 8)}
-                        </Link>
-                        <p className="text-sm text-gray-500 mt-1">
-                          Created: {new Date(list.createdAt).toLocaleDateString()}
-                        </p>
-                        <p className="text-sm text-gray-500">
-                          Items: {list._count?.items || 0}
-                        </p>
-                        <div className="mt-1">
-                          <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
-                            list.status === 'completed' 
-                              ? 'bg-green-100 text-green-800' 
-                              : 'bg-yellow-100 text-yellow-800'
-                          }`}>
-                            {list.status === 'completed' ? '✓ Completed' : '⋯ Draft'}
-                          </span>
-                        </div>
-                      </div>
-                      <div className="flex space-x-2">
-                        {list.status === 'completed' ? (
-                          <Link
-                            to={`/buyer/orders/${list.id}/receipt`}
-                            className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 text-sm"
-                          >
-                            View Receipt
-                          </Link>
-                        ) : (
-                          <>
-                            <Link
-                              to={`/buyer/shopping-lists/${list.id}`}
-                              className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 text-sm"
-                            >
-                              Open
-                            </Link>
-                            <button
-                              onClick={() => deleteShoppingList(list.id)}
-                              className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 text-sm"
-                            >
-                              Delete
-                            </button>
-                          </>
-                        )}
-                      </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {shoppingLists.map((list) => (
+                <div
+                  key={list.id}
+                  className="bg-white rounded-xl shadow-lg hover:shadow-xl transition p-6 border border-gray-100"
+                >
+                  <div className="flex items-start justify-between mb-4">
+                    <div className="flex-1">
+                      <Link
+                        to={list.status === 'completed' ? `/buyer/shopping-lists/${list.id}/receipt` : `/buyer/shopping-lists/${list.id}`}
+                        className="text-lg font-bold text-gray-900 hover:text-green-600 transition"
+                      >
+                        Shopping List
+                      </Link>
+                      <p className="text-xs text-gray-400 mt-1 font-mono">
+                        #{list.id.slice(0, 8)}
+                      </p>
                     </div>
-                  </li>
-                ))}
-              </ul>
+                    <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold ${
+                      list.status === 'completed' 
+                        ? 'bg-green-100 text-green-800' 
+                        : 'bg-yellow-100 text-yellow-800'
+                    }`}>
+                      {list.status === 'completed' ? '✓ Completed' : '⋯ Draft'}
+                    </span>
+                  </div>
+
+                  <div className="space-y-2 mb-4">
+                    <div className="flex items-center text-sm text-gray-600">
+                      <span className="font-medium mr-2">📅</span>
+                      <span>{new Date(list.createdAt).toLocaleDateString('en-US', { 
+                        month: 'short', 
+                        day: 'numeric', 
+                        year: 'numeric' 
+                      })}</span>
+                    </div>
+                    <div className="flex items-center text-sm text-gray-600">
+                      <span className="font-medium mr-2">📦</span>
+                      <span>{list._count?.items || 0} {list._count?.items === 1 ? 'item' : 'items'}</span>
+                    </div>
+                  </div>
+
+                  <div className="flex space-x-2 mt-4 pt-4 border-t border-gray-100">
+                    {list.status === 'completed' ? (
+                      <Link
+                        to={`/buyer/orders/${list.id}/receipt`}
+                        className="flex-1 bg-green-600 text-white text-center px-4 py-2 rounded-lg hover:bg-green-700 transition font-medium text-sm"
+                      >
+                        View Receipt
+                      </Link>
+                    ) : (
+                      <>
+                        <Link
+                          to={`/buyer/shopping-lists/${list.id}`}
+                          className="flex-1 bg-green-600 text-white text-center px-4 py-2 rounded-lg hover:bg-green-700 transition font-medium text-sm"
+                        >
+                          Open
+                        </Link>
+                        <button
+                          onClick={() => deleteShoppingList(list.id)}
+                          className="px-4 py-2 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 transition font-medium text-sm"
+                        >
+                          Delete
+                        </button>
+                      </>
+                    )}
+                  </div>
+                </div>
+              ))}
             </div>
           )}
         </div>
