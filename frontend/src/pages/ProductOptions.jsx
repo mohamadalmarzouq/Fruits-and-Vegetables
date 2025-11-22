@@ -67,14 +67,18 @@ const ProductOptions = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <nav className="bg-white shadow">
+    <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-green-50">
+      {/* Header */}
+      <nav className="bg-gradient-to-r from-green-600 to-green-700 shadow-lg">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between h-16">
             <div className="flex items-center space-x-4">
+              <Link to="/" className="text-2xl font-bold text-white">
+                FreshSavor
+              </Link>
               <Link
                 to={`/buyer/shopping-lists/${id}`}
-                className="text-indigo-600 hover:text-indigo-800"
+                className="text-green-100 hover:text-white text-sm"
               >
                 ← Back to Shopping List
               </Link>
@@ -82,7 +86,7 @@ const ProductOptions = () => {
             <div className="flex items-center space-x-4">
               <button
                 onClick={logout}
-                className="text-sm text-indigo-600 hover:text-indigo-500"
+                className="text-sm text-white hover:text-green-100 font-medium"
               >
                 Logout
               </button>
@@ -91,94 +95,107 @@ const ProductOptions = () => {
         </div>
       </nav>
 
-      <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-        <div className="px-4 py-6 sm:px-0">
-          <div className="mb-6">
-            <h2 className="text-2xl font-bold text-gray-900">Available Options</h2>
-            <p className="text-gray-600 mt-1">
+      {/* Main Content */}
+      <div className="max-w-7xl mx-auto py-8 sm:px-6 lg:px-8">
+        <div className="px-4 sm:px-0">
+          <div className="mb-8">
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">Available Options</h1>
+            <p className="text-lg text-gray-600">
               {item.product.name} • {item.quantity} {item.unit}
               {item.originPreference && ` • Your Preference: ${item.originPreference}`}
             </p>
-            <p className="text-sm text-gray-500 mt-1">
+            <p className="text-sm text-gray-500 mt-2">
               Showing all available origins - select the best option for you
             </p>
           </div>
 
           {error && (
-            <div className="mb-4 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
+            <div className="mb-6 bg-red-50 border-l-4 border-red-500 text-red-700 px-4 py-3 rounded-lg shadow">
               {error}
             </div>
           )}
 
           {options.length === 0 ? (
-            <div className="bg-white shadow rounded-lg p-12 text-center">
+            <div className="bg-white shadow-lg rounded-xl p-12 text-center border-2 border-dashed border-gray-300">
+              <div className="text-6xl mb-4">🔍</div>
+              <p className="text-xl text-gray-700 mb-2 font-semibold">
+                No options available
+              </p>
               <p className="text-gray-500">
-                No vendor options available for this product.
-                {item.originPreference && ' Try removing the origin preference.'}
+                {item.originPreference && 'Try removing the origin preference.'}
               </p>
             </div>
           ) : (
-            <div className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {options.map((option, index) => (
                 <div
                   key={option.id}
-                  className={`bg-white shadow rounded-lg p-6 border-2 ${
+                  className={`bg-white shadow-lg rounded-xl p-6 border-2 transition hover:shadow-xl ${
                     option.isBestPrice
-                      ? 'border-green-500'
+                      ? 'border-green-500 bg-green-50'
                       : selectedOption === option.id
-                      ? 'border-indigo-500'
-                      : 'border-gray-200'
+                      ? 'border-green-600 bg-green-50'
+                      : 'border-gray-200 hover:border-green-300'
                   }`}
                 >
-                  <div className="flex items-start justify-between">
-                    <div className="flex items-start space-x-4 flex-1">
+                  <div className="space-y-4">
+                    <div className="flex items-start space-x-4">
                       <img
                         src={option.imageUrl.startsWith('http') ? option.imageUrl : `${import.meta.env.VITE_API_URL?.replace('/api', '') || 'http://localhost:5000'}${option.imageUrl}`}
                         alt={option.product.name}
-                        className="h-24 w-24 object-cover rounded"
+                        className="h-32 w-32 object-cover rounded-lg"
                       />
                       <div className="flex-1">
-                        <div className="flex items-center space-x-2">
-                          <h3 className="text-lg font-medium">{option.product.name}</h3>
-                          {option.isBestPrice && (
-                            <span className="bg-green-100 text-green-800 text-xs font-semibold px-2 py-1 rounded-full">
-                              Best Price
-                            </span>
-                          )}
-                          {selectedOption === option.id && (
-                            <span className="bg-indigo-100 text-indigo-800 text-xs font-semibold px-2 py-1 rounded-full">
-                              Selected
-                            </span>
+                        <div className="flex items-start justify-between mb-2">
+                          <h3 className="text-xl font-bold text-gray-900">{option.product.name}</h3>
+                          <div className="flex flex-col items-end space-y-1">
+                            {option.isBestPrice && (
+                              <span className="bg-green-600 text-white text-xs font-bold px-3 py-1 rounded-full">
+                                ⭐ Best Price
+                              </span>
+                            )}
+                            {selectedOption === option.id && (
+                              <span className="bg-green-700 text-white text-xs font-bold px-3 py-1 rounded-full">
+                                ✓ Selected
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                        <div className="space-y-1">
+                          <p className="text-sm text-gray-600">
+                            <span className="font-medium">📍</span> {option.origin}
+                          </p>
+                          <p className="text-sm text-gray-600">
+                            <span className="font-medium">📦</span> Available: {option.availableQuantity} {option.availableUnit}
+                          </p>
+                          {option.vendorCount > 1 && (
+                            <p className="text-xs text-gray-500">
+                              {option.vendorCount} vendors offering this price
+                            </p>
                           )}
                         </div>
-                        <p className="text-sm text-gray-600 mt-1">
-                          Origin: {option.origin}
-                        </p>
-                        <p className="text-sm text-gray-600">
-                          Available: {option.availableQuantity} {option.availableUnit}
-                        </p>
-                        <p className="text-lg font-bold text-indigo-600 mt-2">
-                          {parseFloat(option.totalPrice).toFixed(2)} KWD
-                        </p>
-                        {option.vendorCount > 1 && (
-                          <p className="text-xs text-gray-500 mt-1">
-                            {option.vendorCount} vendors offering this price
-                          </p>
-                        )}
                       </div>
                     </div>
-                    <div>
-                      <button
-                        onClick={() => handleSelect(option.id)}
-                        disabled={saving || selectedOption === option.id}
-                        className={`px-6 py-2 rounded-md text-sm font-medium ${
-                          selectedOption === option.id
-                            ? 'bg-gray-400 text-white cursor-not-allowed'
-                            : 'bg-indigo-600 text-white hover:bg-indigo-700'
-                        } disabled:opacity-50`}
-                      >
-                        {saving ? 'Saving...' : selectedOption === option.id ? 'Selected' : 'Select'}
-                      </button>
+                    <div className="border-t border-gray-200 pt-4">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="text-xs text-gray-500">Total Price</p>
+                          <p className="text-2xl font-bold text-green-600">
+                            {parseFloat(option.totalPrice).toFixed(2)} KWD
+                          </p>
+                        </div>
+                        <button
+                          onClick={() => handleSelect(option.id)}
+                          disabled={saving || selectedOption === option.id}
+                          className={`px-6 py-3 rounded-lg text-sm font-semibold transition ${
+                            selectedOption === option.id
+                              ? 'bg-gray-400 text-white cursor-not-allowed'
+                              : 'bg-green-600 text-white hover:bg-green-700 shadow-lg hover:shadow-xl'
+                          } disabled:opacity-50`}
+                        >
+                          {saving ? 'Saving...' : selectedOption === option.id ? '✓ Selected' : 'Select'}
+                        </button>
+                      </div>
                     </div>
                   </div>
                 </div>
