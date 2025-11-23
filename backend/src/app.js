@@ -8,6 +8,8 @@ import { errorHandler } from './middleware/errorHandler.js';
 // Import routes
 import authRoutes from './routes/auth.js';
 import vendorProductRoutes from './routes/vendorProducts.js';
+import vendorOrderRoutes from './routes/vendorOrders.js';
+import vendorInventoryRoutes from './routes/vendorInventory.js';
 import productRoutes from './routes/products.js';
 import adminRoutes from './routes/admin.js';
 import buyerRoutes from './routes/buyer.js';
@@ -35,6 +37,8 @@ app.use('/uploads', express.static(uploadDir));
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/vendor/products', vendorProductRoutes);
+app.use('/api/vendor/orders', vendorOrderRoutes);
+app.use('/api/vendor/inventory', vendorInventoryRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/buyer', buyerRoutes);

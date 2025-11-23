@@ -42,6 +42,13 @@ enum BuyerType {
   organization
 }
 
+enum OrderItemStatus {
+  pending
+  preparing
+  ready
+  completed
+}
+
 model User {
   id            String        @id @default(uuid())
   email         String        @unique
@@ -75,17 +82,18 @@ model Product {
 }
 
 model VendorProduct {
-  id        String   @id @default(uuid())
-  vendorId  String   @map("vendor_id")
-  productId String   @map("product_id")
-  quantity  Decimal  @db.Decimal(10, 2)
-  unit      Unit
-  price     Decimal  @db.Decimal(10, 2)
-  origin    String
-  imageUrl  String   @map("image_url")
-  isActive  Boolean  @default(true) @map("is_active")
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
+  id          String   @id @default(uuid())
+  vendorId    String   @map("vendor_id")
+  productId   String   @map("product_id")
+  quantity    Decimal  @db.Decimal(10, 2)
+  initialStock Decimal? @db.Decimal(10, 2) @map("initial_stock") // Track original stock for inventory
+  unit        Unit
+  price       Decimal  @db.Decimal(10, 2)
+  origin      String
+  imageUrl    String   @map("image_url")
+  isActive    Boolean  @default(true) @map("is_active")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
 
   // Relations
   vendor         User              @relation(fields: [vendorId], references: [id])
@@ -162,13 +170,15 @@ model Order {
 }
 
 model OrderItem {
-  id          String   @id @default(uuid())
-  orderId     String   @map("order_id")
-  vendorProductId String @map("vendor_product_id")
-  quantity    Decimal  @db.Decimal(10, 2)
-  unitPrice   Decimal  @db.Decimal(10, 2) @map("unit_price")
-  totalPrice  Decimal  @db.Decimal(10, 2) @map("total_price")
-  createdAt   DateTime @default(now()) @map("created_at")
+  id          String          @id @default(uuid())
+  orderId     String          @map("order_id")
+  vendorProductId String       @map("vendor_product_id")
+  quantity    Decimal         @db.Decimal(10, 2)
+  unitPrice   Decimal         @db.Decimal(10, 2) @map("unit_price")
+  totalPrice  Decimal         @db.Decimal(10, 2) @map("total_price")
+  status      OrderItemStatus @default(pending)
+  createdAt   DateTime        @default(now()) @map("created_at")
+  updatedAt   DateTime        @updatedAt @map("updated_at")
 
   // Relations
   order         Order         @relation(fields: [orderId], references: [id])

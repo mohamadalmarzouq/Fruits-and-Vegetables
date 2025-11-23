@@ -2,9 +2,12 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import api from '../utils/api';
+import VendorOrders from '../components/VendorOrders';
+import VendorInventory from '../components/VendorInventory';
 
 const VendorDashboard = () => {
   const { user, logout } = useAuth();
+  const [activeTab, setActiveTab] = useState('products'); // 'products', 'orders', 'inventory'
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
@@ -194,11 +197,47 @@ const VendorDashboard = () => {
           {/* Welcome Section */}
           <div className="mb-8">
             <h1 className="text-3xl font-bold text-gray-900 mb-2">
-              Manage Your Products 🛍️
+              Vendor Dashboard
             </h1>
             <p className="text-gray-600">
-              Upload and manage your fresh produce inventory
+              Manage your products, orders, and inventory
             </p>
+          </div>
+
+          {/* Tabs */}
+          <div className="mb-6 border-b border-gray-200">
+            <nav className="-mb-px flex space-x-8">
+              <button
+                onClick={() => setActiveTab('products')}
+                className={`py-4 px-1 border-b-2 font-medium text-sm ${
+                  activeTab === 'products'
+                    ? 'border-green-500 text-green-600'
+                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                }`}
+              >
+                Products
+              </button>
+              <button
+                onClick={() => setActiveTab('orders')}
+                className={`py-4 px-1 border-b-2 font-medium text-sm ${
+                  activeTab === 'orders'
+                    ? 'border-green-500 text-green-600'
+                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                }`}
+              >
+                Orders
+              </button>
+              <button
+                onClick={() => setActiveTab('inventory')}
+                className={`py-4 px-1 border-b-2 font-medium text-sm ${
+                  activeTab === 'inventory'
+                    ? 'border-green-500 text-green-600'
+                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                }`}
+              >
+                Inventory
+              </button>
+            </nav>
           </div>
 
           {/* Messages */}
@@ -213,23 +252,26 @@ const VendorDashboard = () => {
             </div>
           )}
 
-          {/* Action Bar */}
-          <div className="mb-6 flex justify-between items-center">
-            <h2 className="text-2xl font-bold text-gray-900">My Products</h2>
-            <button
-              onClick={() => {
-                if (showForm) {
-                  handleCancelEdit();
-                } else {
-                  setShowForm(true);
-                }
-              }}
-              className="bg-green-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-green-700 transition shadow-lg hover:shadow-xl flex items-center space-x-2"
-            >
-              <span>{showForm ? '✕' : '+'}</span>
-              <span>{showForm ? 'Cancel' : 'Add Product'}</span>
-            </button>
-          </div>
+          {/* Tab Content */}
+          {activeTab === 'products' && (
+            <>
+              {/* Action Bar */}
+              <div className="mb-6 flex justify-between items-center">
+                <h2 className="text-2xl font-bold text-gray-900">My Products</h2>
+                <button
+                  onClick={() => {
+                    if (showForm) {
+                      handleCancelEdit();
+                    } else {
+                      setShowForm(true);
+                    }
+                  }}
+                  className="bg-green-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-green-700 transition shadow-lg hover:shadow-xl flex items-center space-x-2"
+                >
+                  <span>{showForm ? '✕' : '+'}</span>
+                  <span>{showForm ? 'Cancel' : 'Add Product'}</span>
+                </button>
+              </div>
 
           {showForm && (
             <div className="mb-6 bg-white shadow-lg rounded-xl p-6 border border-gray-100">
@@ -423,6 +465,16 @@ const VendorDashboard = () => {
                 </div>
               ))}
             </div>
+          )}
+            </>
+          )}
+
+          {activeTab === 'orders' && (
+            <VendorOrders />
+          )}
+
+          {activeTab === 'inventory' && (
+            <VendorInventory />
           )}
         </div>
       </div>

@@ -48,6 +48,7 @@ export const createProduct = async (req, res, next) => {
         vendorId,
         productId,
         quantity: stockQuantity, // Stock quantity (hidden from form, but needed for availability)
+        initialStock: stockQuantity, // Set initial stock for inventory tracking
         unit,
         price: parseFloat(pricePerUnit), // This is now price per unit
         origin,
