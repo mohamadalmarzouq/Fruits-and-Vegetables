@@ -141,15 +141,14 @@ const ProductOptions = () => {
                 >
                   <div className="space-y-4">
                     <div className="flex items-start space-x-4">
-                      <div className="relative group">
+                      <div className="relative group cursor-pointer" onClick={() => setSelectedImage(option.imageUrl.startsWith('http') ? option.imageUrl : `${import.meta.env.VITE_API_URL?.replace('/api', '') || 'http://localhost:5000'}${option.imageUrl}`)}>
                         <img
                           src={option.imageUrl.startsWith('http') ? option.imageUrl : `${import.meta.env.VITE_API_URL?.replace('/api', '') || 'http://localhost:5000'}${option.imageUrl}`}
                           alt={option.product.name}
-                          className="h-32 w-32 object-cover rounded-lg cursor-pointer hover:opacity-90 transition border-2 border-gray-200 hover:border-green-500"
-                          onClick={() => setSelectedImage(option.imageUrl.startsWith('http') ? option.imageUrl : `${import.meta.env.VITE_API_URL?.replace('/api', '') || 'http://localhost:5000'}${option.imageUrl}`)}
+                          className="h-32 w-32 object-cover rounded-lg hover:opacity-90 transition border-2 border-gray-200 hover:border-green-500"
                         />
-                        <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-10 rounded-lg transition flex items-center justify-center">
-                          <span className="text-white opacity-0 group-hover:opacity-100 text-xs font-semibold bg-green-600 px-2 py-1 rounded">
+                        <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-10 rounded-lg transition flex items-center justify-center pointer-events-none">
+                          <span className="text-white opacity-0 group-hover:opacity-100 text-xs font-semibold bg-green-600 px-2 py-1 rounded pointer-events-none">
                             Click to enlarge
                           </span>
                         </div>

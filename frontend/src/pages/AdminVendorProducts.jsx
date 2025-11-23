@@ -113,15 +113,14 @@ const AdminVendorProducts = () => {
                   className="bg-white rounded-xl shadow-lg hover:shadow-xl transition p-6 border border-gray-100"
                 >
                   <div className="mb-4">
-                    <div className="relative group">
+                    <div className="relative group cursor-pointer" onClick={() => setSelectedImage(product.imageUrl.startsWith('http') ? product.imageUrl : `${import.meta.env.VITE_API_URL?.replace('/api', '') || 'http://localhost:5000'}${product.imageUrl}`)}>
                       <img
                         src={product.imageUrl.startsWith('http') ? product.imageUrl : `${import.meta.env.VITE_API_URL?.replace('/api', '') || 'http://localhost:5000'}${product.imageUrl}`}
                         alt={product.product.name}
-                        className="h-48 w-full object-cover rounded-lg cursor-pointer hover:opacity-90 transition border-2 border-gray-200 hover:border-indigo-500"
-                        onClick={() => setSelectedImage(product.imageUrl.startsWith('http') ? product.imageUrl : `${import.meta.env.VITE_API_URL?.replace('/api', '') || 'http://localhost:5000'}${product.imageUrl}`)}
+                        className="h-48 w-full object-cover rounded-lg hover:opacity-90 transition border-2 border-gray-200 hover:border-indigo-500"
                       />
-                      <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-10 rounded-lg transition flex items-center justify-center">
-                        <span className="text-white opacity-0 group-hover:opacity-100 text-xs font-semibold bg-indigo-600 px-2 py-1 rounded">
+                      <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-10 rounded-lg transition flex items-center justify-center pointer-events-none">
+                        <span className="text-white opacity-0 group-hover:opacity-100 text-xs font-semibold bg-indigo-600 px-2 py-1 rounded pointer-events-none">
                           Click to enlarge
                         </span>
                       </div>
