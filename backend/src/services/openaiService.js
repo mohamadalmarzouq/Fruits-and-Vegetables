@@ -6,9 +6,13 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY
-});
+// Initialize OpenAI client only if API key is available
+let openai = null;
+if (process.env.OPENAI_API_KEY) {
+  openai = new OpenAI({
+    apiKey: process.env.OPENAI_API_KEY
+  });
+}
 
 // Get upload directory (same as in upload.js middleware)
 const getUploadDir = () => {
@@ -23,6 +27,11 @@ const getUploadDir = () => {
  */
 export const analyzeProductImage = async (imagePath, productName) => {
   try {
+    // Check if OpenAI API key is configured
+    if (!openai) {
+      throw new Error('OpenAI API key is not configured. Please set OPENAI_API_KEY environment variable.');
+    }
+
     // Extract filename from path (handles both /uploads/filename.jpg and filename.jpg)
     const filename = path.basename(imagePath);
     const uploadDir = getUploadDir();
