@@ -54,9 +54,9 @@ const OrderReceipt = () => {
         };
       });
 
-      // Commission is 5% (hidden from user)
-      const commission = subtotal * 0.05;
-      const grandTotal = subtotal + commission;
+      // Commission is calculated and stored in database for admin, but NOT shown to buyers
+      // Buyers only see the subtotal as their total
+      const grandTotal = subtotal; // No commission shown to buyers
 
       setOrder({
         id: shoppingList.id,

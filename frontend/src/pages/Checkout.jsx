@@ -152,8 +152,8 @@ const Checkout = () => {
                   <span className="font-semibold text-gray-900">{parseFloat(checkout.subtotal).toFixed(2)} KWD</span>
                 </div>
                 <div className="flex justify-between text-lg font-bold pt-3 border-t border-gray-300">
-                  <span className="text-gray-900">Grand Total:</span>
-                  <span className="text-green-600 text-2xl">{parseFloat(checkout.grandTotal).toFixed(2)} KWD</span>
+                  <span className="text-gray-900">Total Paid:</span>
+                  <span className="text-green-600 text-2xl">{parseFloat(checkout.subtotal).toFixed(2)} KWD</span>
                 </div>
               </div>
             </div>
