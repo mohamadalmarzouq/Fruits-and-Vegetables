@@ -109,7 +109,7 @@ const VendorOrders = () => {
                 <div className="text-right">
                   <p className="text-sm text-gray-500">Total Amount</p>
                   <p className="text-xl font-bold text-green-600">
-                    {order.totalAmount.toFixed(2)} KWD
+                    {parseFloat(order.totalAmount || 0).toFixed(2)} KWD
                   </p>
                 </div>
               </div>
@@ -136,13 +136,13 @@ const VendorOrders = () => {
                             <span className="font-medium">📦</span> {item.quantity} kg
                           </p>
                           <p className="text-sm font-semibold text-green-600 mt-1">
-                            {item.totalPrice.toFixed(2)} KWD
+                            {parseFloat(item.totalPrice || 0).toFixed(2)} KWD
                           </p>
                         </div>
                       </div>
                       <div className="flex flex-col items-end space-y-2">
-                        <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold ${getStatusColor(item.status)}`}>
-                          {item.status.charAt(0).toUpperCase() + item.status.slice(1)}
+                        <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold ${getStatusColor(item.status || 'pending')}`}>
+                          {(item.status || 'pending').charAt(0).toUpperCase() + (item.status || 'pending').slice(1)}
                         </span>
                         {getNextStatus(item.status) && (
                           <button

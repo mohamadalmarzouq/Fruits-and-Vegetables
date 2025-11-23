@@ -53,17 +53,21 @@ export const getVendorOrders = async (req, res, next) => {
       }
       
       const order = ordersMap.get(orderId);
+      const totalPrice = parseFloat(item.totalPrice);
+      const quantity = parseFloat(item.quantity);
+      const unitPrice = parseFloat(item.unitPrice);
+      
       order.items.push({
         id: item.id,
         product: item.vendorProduct.product,
-        quantity: item.quantity,
-        unitPrice: item.unitPrice,
-        totalPrice: item.totalPrice,
-        status: item.status,
+        quantity: quantity,
+        unitPrice: unitPrice,
+        totalPrice: totalPrice,
+        status: item.status || 'pending', // Default to pending if status is null
         origin: item.vendorProduct.origin,
         imageUrl: item.vendorProduct.imageUrl
       });
-      order.totalAmount += parseFloat(item.totalPrice);
+      order.totalAmount += totalPrice;
     });
 
     // Convert map to array
