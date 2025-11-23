@@ -59,6 +59,11 @@ export const getVendor = async (req, res, next) => {
           orderBy: {
             createdAt: 'desc'
           }
+        },
+        _count: {
+          select: {
+            vendorProducts: true
+          }
         }
       }
     });
