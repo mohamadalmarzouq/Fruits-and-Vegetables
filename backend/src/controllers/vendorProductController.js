@@ -1,5 +1,6 @@
 import prisma from '../config/database.js';
 import path from 'path';
+import { analyzeProductImage } from '../services/openaiService.js';
 
 export const createProduct = async (req, res, next) => {
   try {
@@ -41,6 +42,15 @@ export const createProduct = async (req, res, next) => {
     // We use a large number to indicate "available" - vendors can update this later
     const stockQuantity = quantity ? parseFloat(quantity) : (unit === 'kg' ? 1000 : 1000000);
 
+    // Analyze image with OpenAI (async, don't block response)
+    let aiQualityReport = null;
+    try {
+      aiQualityReport = await analyzeProductImage(imageUrl, product.name);
+    } catch (error) {
+      console.error('Failed to analyze product image:', error);
+      // Continue without blocking - report will be null
+    }
+
     // Create vendor product
     // Note: We store pricePerUnit in the price field, and quantity for stock tracking
     const vendorProduct = await prisma.vendorProduct.create({
@@ -52,7 +62,8 @@ export const createProduct = async (req, res, next) => {
         unit,
         price: parseFloat(pricePerUnit), // This is now price per unit
         origin,
-        imageUrl
+        imageUrl,
+        aiQualityReport // Store AI quality report
       },
       include: {
         product: {
@@ -163,9 +174,23 @@ export const updateProduct = async (req, res, next) => {
     if (origin !== undefined) updateData.origin = origin;
     if (isActive !== undefined) updateData.isActive = isActive === 'true' || isActive === true;
 
-    // Handle image update if provided
+    // Handle image update if provided - re-analyze if image changed
     if (req.file) {
       updateData.imageUrl = `/uploads/${req.file.filename}`;
+      
+      // Get product name for analysis
+      const productInfo = await prisma.product.findUnique({
+        where: { id: existingProduct.productId },
+        select: { name: true }
+      });
+
+      // Analyze new image with OpenAI (async, don't block response)
+      try {
+        updateData.aiQualityReport = await analyzeProductImage(updateData.imageUrl, productInfo.name);
+      } catch (error) {
+        console.error('Failed to analyze product image:', error);
+        // Continue without blocking - report will be null or keep existing
+      }
     }
 
     const updatedProduct = await prisma.vendorProduct.update({

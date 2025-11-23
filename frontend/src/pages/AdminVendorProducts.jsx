@@ -11,6 +11,8 @@ const AdminVendorProducts = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [selectedImage, setSelectedImage] = useState(null);
+  const [refreshingProductId, setRefreshingProductId] = useState(null);
+  const [refreshError, setRefreshError] = useState('');
 
   useEffect(() => {
     fetchVendorProducts();
@@ -26,6 +28,38 @@ const AdminVendorProducts = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const refreshAnalysis = async (productId) => {
+    setRefreshingProductId(productId);
+    setRefreshError('');
+    try {
+      const response = await api.post(`/admin/products/${productId}/analyze`);
+      // Update the product in the vendor's products list
+      setVendor(prev => ({
+        ...prev,
+        vendorProducts: prev.vendorProducts.map(p => 
+          p.id === productId ? response.data.product : p
+        )
+      }));
+    } catch (error) {
+      console.error('Error refreshing analysis:', error);
+      setRefreshError(`Failed to refresh analysis: ${error.response?.data?.message || error.message}`);
+    } finally {
+      setRefreshingProductId(null);
+    }
+  };
+
+  const renderStars = (score, maxScore) => {
+    const stars = [];
+    for (let i = 0; i < maxScore; i++) {
+      stars.push(
+        <span key={i} className={i < score ? 'text-yellow-400' : 'text-gray-300'}>
+          ⭐
+        </span>
+      );
+    }
+    return stars;
   };
 
   if (loading) {
@@ -149,6 +183,61 @@ const AdminVendorProducts = () => {
                         Added: {new Date(product.createdAt).toLocaleDateString()}
                       </p>
                     </div>
+                  </div>
+
+                  {/* AI Quality Report */}
+                  <div className="mt-4 pt-4 border-t border-gray-200">
+                    <div className="flex items-center justify-between mb-2">
+                      <h4 className="text-sm font-semibold text-gray-900">AI Quality Report</h4>
+                      <button
+                        onClick={() => refreshAnalysis(product.id)}
+                        disabled={refreshingProductId === product.id}
+                        className="text-xs px-2 py-1 bg-indigo-600 text-white rounded hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        {refreshingProductId === product.id ? 'Analyzing...' : 'Refresh Analysis'}
+                      </button>
+                    </div>
+                    {refreshError && refreshingProductId === product.id && (
+                      <p className="text-xs text-red-600 mb-2">{refreshError}</p>
+                    )}
+                    {product.aiQualityReport ? (
+                      <div className="space-y-2 text-xs">
+                        <div>
+                          <span className="font-medium text-gray-700">Freshness: </span>
+                          <span className="inline-flex items-center">
+                            {renderStars(product.aiQualityReport.freshness?.score || 0, product.aiQualityReport.freshness?.maxScore || 5)}
+                          </span>
+                          <span className="text-gray-600 ml-1">
+                            ({product.aiQualityReport.freshness?.score || 0}/{product.aiQualityReport.freshness?.maxScore || 5})
+                          </span>
+                          {product.aiQualityReport.freshness?.description && (
+                            <p className="text-gray-500 mt-0.5">{product.aiQualityReport.freshness.description}</p>
+                          )}
+                        </div>
+                        <div>
+                          <span className="font-medium text-gray-700">Ripeness: </span>
+                          <span className="text-gray-600">{product.aiQualityReport.ripeness || 'Not assessed'}</span>
+                        </div>
+                        <div>
+                          <span className="font-medium text-gray-700">Visible defects: </span>
+                          <span className="text-gray-600">{product.aiQualityReport.visibleDefects || 'No defects noted'}</span>
+                        </div>
+                        <div>
+                          <span className="font-medium text-gray-700">Color: </span>
+                          <span className="text-gray-600">{product.aiQualityReport.color || 'Not assessed'}</span>
+                        </div>
+                        {product.aiQualityReport.overallQuality && (
+                          <div className="pt-1 border-t border-gray-100">
+                            <span className="font-medium text-gray-700">Overall: </span>
+                            <span className="text-gray-600">{product.aiQualityReport.overallQuality}</span>
+                          </div>
+                        )}
+                      </div>
+                    ) : (
+                      <p className="text-xs text-gray-500 italic">
+                        Failed to get the report for this image. Click "Refresh Analysis" to try again.
+                      </p>
+                    )}
                   </div>
                 </div>
               ))}

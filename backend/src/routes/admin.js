@@ -5,7 +5,8 @@ import {
   getVendor,
   approveVendor,
   rejectVendor,
-  getDashboardStats
+  getDashboardStats,
+  refreshProductAnalysis
 } from '../controllers/adminController.js';
 import {
   getCatalog,
@@ -33,6 +34,9 @@ router.get('/vendors', getVendors);
 router.get('/vendors/:id', getVendor);
 router.put('/vendors/:id/approve', approveVendor);
 router.put('/vendors/:id/reject', rejectVendor);
+
+// Product Quality Analysis
+router.post('/products/:productId/analyze', refreshProductAnalysis);
 
 // Catalog Management
 router.get('/catalog', getCatalog);

@@ -1,4 +1,5 @@
 import prisma from '../config/database.js';
+import { analyzeProductImage } from '../services/openaiService.js';
 
 // Get all vendors (pending, approved, rejected)
 export const getVendors = async (req, res, next) => {
@@ -175,6 +176,63 @@ export const getDashboardStats = async (req, res, next) => {
         totalOrders,
         totalCommission: totalCommission._sum.platformCommission || 0
       }
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// Refresh AI quality analysis for a vendor product
+export const refreshProductAnalysis = async (req, res, next) => {
+  try {
+    const { productId } = req.params;
+
+    // Get the vendor product with product name
+    const vendorProduct = await prisma.vendorProduct.findUnique({
+      where: { id: productId },
+      include: {
+        product: {
+          select: {
+            name: true
+          }
+        }
+      }
+    });
+
+    if (!vendorProduct) {
+      return res.status(404).json({ error: 'Product not found' });
+    }
+
+    // Analyze the image
+    let aiQualityReport = null;
+    try {
+      aiQualityReport = await analyzeProductImage(vendorProduct.imageUrl, vendorProduct.product.name);
+    } catch (error) {
+      console.error('Failed to analyze product image:', error);
+      return res.status(500).json({ 
+        error: 'Failed to analyze image', 
+        message: error.message 
+      });
+    }
+
+    // Update the product with new analysis
+    const updatedProduct = await prisma.vendorProduct.update({
+      where: { id: productId },
+      data: { aiQualityReport },
+      include: {
+        product: {
+          select: {
+            id: true,
+            name: true,
+            category: true
+          }
+        }
+      }
+    });
+
+    res.json({
+      message: 'Quality analysis refreshed successfully',
+      product: updatedProduct
     });
   } catch (error) {
     next(error);
