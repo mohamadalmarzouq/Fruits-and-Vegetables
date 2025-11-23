@@ -44,6 +44,7 @@ export const getVendor = async (req, res, next) => {
       select: {
         id: true,
         email: true,
+        role: true,
         vendorStatus: true,
         createdAt: true,
         vendorProducts: {
