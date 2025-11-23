@@ -47,7 +47,6 @@ export const getVendor = async (req, res, next) => {
         vendorStatus: true,
         createdAt: true,
         vendorProducts: {
-          where: { isActive: true },
           include: {
             product: {
               select: {
@@ -56,6 +55,9 @@ export const getVendor = async (req, res, next) => {
                 category: true
               }
             }
+          },
+          orderBy: {
+            createdAt: 'desc'
           }
         }
       }

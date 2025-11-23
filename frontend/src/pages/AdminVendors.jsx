@@ -182,6 +182,12 @@ const AdminVendors = () => {
                         </div>
                       </div>
                       <div className="flex space-x-2">
+                        <Link
+                          to={`/admin/vendors/${vendor.id}/products`}
+                          className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 text-sm"
+                        >
+                          Products
+                        </Link>
                         {vendor.vendorStatus === 'pending' && (
                           <>
                             <button

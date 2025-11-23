@@ -6,6 +6,7 @@ import Register from './pages/Register';
 import VendorDashboard from './pages/VendorDashboard';
 import AdminDashboard from './pages/AdminDashboard';
 import AdminVendors from './pages/AdminVendors';
+import AdminVendorProducts from './pages/AdminVendorProducts';
 import AdminCatalog from './pages/AdminCatalog';
 import AdminOrders from './pages/AdminOrders';
 import ProtectedRoute from './components/ProtectedRoute';
@@ -52,22 +53,30 @@ function App() {
               </AdminProtectedRoute>
             }
           />
-          <Route
-            path="/admin/vendors"
-            element={
-              <AdminProtectedRoute>
-                <AdminVendors />
-              </AdminProtectedRoute>
-            }
-          />
-          <Route
-            path="/admin/catalog"
-            element={
-              <AdminProtectedRoute>
-                <AdminCatalog />
-              </AdminProtectedRoute>
-            }
-          />
+                <Route
+                  path="/admin/vendors"
+                  element={
+                    <AdminProtectedRoute>
+                      <AdminVendors />
+                    </AdminProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/admin/vendors/:id/products"
+                  element={
+                    <AdminProtectedRoute>
+                      <AdminVendorProducts />
+                    </AdminProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/admin/catalog"
+                  element={
+                    <AdminProtectedRoute>
+                      <AdminCatalog />
+                    </AdminProtectedRoute>
+                  }
+                />
           <Route
             path="/admin/orders"
             element={
