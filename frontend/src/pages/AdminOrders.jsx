@@ -133,13 +133,25 @@ const AdminOrders = () => {
                         <div className="mt-2 space-y-2">
                           {selectedOrder.items.map((item, idx) => (
                             <div key={idx} className="text-sm border-b pb-2">
-                              <p className="font-medium">{item.vendorProduct.product.name}</p>
-                              <p className="text-gray-600">
-                                {item.quantity} {item.vendorProduct.unit} × {parseFloat(item.unitPrice).toFixed(2)} KWD
-                              </p>
-                              <p className="text-xs text-gray-500">
-                                Vendor: {item.vendorProduct.vendor.email}
-                              </p>
+                              <div className="flex items-start justify-between">
+                                <div className="flex-1">
+                                  <p className="font-medium">{item.vendorProduct.product.name}</p>
+                                  <p className="text-gray-600">
+                                    {item.quantity} {item.vendorProduct.unit} × {parseFloat(item.unitPrice).toFixed(2)} KWD
+                                  </p>
+                                  <p className="text-xs text-gray-500">
+                                    Vendor: {item.vendorProduct.vendor.email}
+                                  </p>
+                                </div>
+                                <span className={`ml-2 px-2 py-1 rounded-full text-xs font-semibold ${
+                                  item.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
+                                  item.status === 'preparing' ? 'bg-blue-100 text-blue-800' :
+                                  item.status === 'ready' ? 'bg-purple-100 text-purple-800' :
+                                  'bg-green-100 text-green-800'
+                                }`}>
+                                  {item.status ? item.status.charAt(0).toUpperCase() + item.status.slice(1) : 'Pending'}
+                                </span>
+                              </div>
                             </div>
                           ))}
                         </div>

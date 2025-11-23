@@ -133,7 +133,7 @@ const VendorOrders = () => {
                             <span className="font-medium">📍</span> {item.origin}
                           </p>
                           <p className="text-sm text-gray-600">
-                            <span className="font-medium">📦</span> {item.quantity} {item.product.category === 'fruit' ? 'kg' : 'kg'}
+                            <span className="font-medium">📦</span> {item.quantity} kg
                           </p>
                           <p className="text-sm font-semibold text-green-600 mt-1">
                             {item.totalPrice.toFixed(2)} KWD
