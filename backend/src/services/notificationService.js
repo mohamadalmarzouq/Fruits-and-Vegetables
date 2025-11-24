@@ -51,6 +51,7 @@ function formatPhoneNumber(phone) {
 
 /**
  * Build order notification message
+ * Keep it short for SMS (under 160 chars for single SMS, or optimize for multi-part)
  * @param {Object} order - Order object
  * @param {Array} vendorItems - Array of items for this vendor
  * @returns {string} - Formatted message
@@ -58,17 +59,19 @@ function formatPhoneNumber(phone) {
 function buildOrderMessage(order, vendorItems) {
   const orderLink = `${process.env.FRONTEND_URL || 'https://yourdomain.com'}/vendor/dashboard?tab=orders&orderId=${order.id}`;
   
+  // Short format: "2kg Apple(Spain), 1kg Cucumber(KW)"
   const itemsList = vendorItems.map(item => 
-    `• ${item.quantity} ${item.unit} ${item.productName} (${item.origin})`
-  ).join('\n');
+    `${item.quantity}${item.unit} ${item.productName}(${item.origin})`
+  ).join(', ');
   
   const total = vendorItems.reduce((sum, item) => sum + parseFloat(item.totalPrice), 0);
+  const orderShortId = order.id.slice(0, 8);
   
-  return `🛒 New Order Received!\n\n` +
-    `Order #${order.id.slice(0, 8)}\n` +
-    `Items:\n${itemsList}\n` +
-    `Total: ${total.toFixed(2)} KWD\n\n` +
-    `View & fulfill: ${orderLink}`;
+  // Compact message format
+  return `🛒 New Order #${orderShortId}\n` +
+    `${itemsList}\n` +
+    `Total: ${total.toFixed(2)} KWD\n` +
+    `${orderLink}`;
 }
 
 /**
