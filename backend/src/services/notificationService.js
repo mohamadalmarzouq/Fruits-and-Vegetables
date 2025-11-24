@@ -9,8 +9,13 @@ const whatsappFromNumber = process.env.TWILIO_WHATSAPP_NUMBER; // For future Wha
 let client = null;
 if (accountSid && authToken) {
   client = twilio(accountSid, authToken);
+  console.log('Twilio client initialized successfully');
+  console.log('SMS From Number:', smsFromNumber || 'NOT SET');
 } else {
   console.warn('Twilio credentials not configured. SMS notifications will be disabled.');
+  console.warn('TWILIO_ACCOUNT_SID:', accountSid ? 'SET' : 'NOT SET');
+  console.warn('TWILIO_AUTH_TOKEN:', authToken ? 'SET' : 'NOT SET');
+  console.warn('TWILIO_PHONE_NUMBER:', smsFromNumber ? 'SET' : 'NOT SET');
 }
 
 /**

@@ -215,8 +215,10 @@ export const completeCheckout = async (req, res, next) => {
     });
 
     // Send notifications to vendors (async, don't block response)
+    console.log('Starting vendor notifications for order:', order.id);
     notifyVendors(order).catch(err => {
       console.error('Failed to send vendor notifications:', err);
+      console.error('Error details:', err.message, err.stack);
       // Don't fail order creation if notifications fail
     });
 
@@ -269,7 +271,13 @@ async function notifyVendors(order) {
   // Send notification to each vendor
   const notificationPromises = [];
   
+  console.log(`Found ${vendorsMap.size} unique vendors in order`);
+  
   for (const [vendorId, vendorData] of vendorsMap) {
+    console.log(`Processing vendor ${vendorId} (${vendorData.vendor.email})`);
+    console.log(`Phone number: ${vendorData.vendor.phoneNumber || 'NOT SET'}`);
+    console.log(`Notification preference: ${vendorData.vendor.notificationPreference || 'sms (default)'}`);
+    
     if (vendorData.vendor.phoneNumber) {
       notificationPromises.push(
         sendOrderNotification(
@@ -278,6 +286,7 @@ async function notifyVendors(order) {
           vendorData.items
         ).catch(err => {
           console.error(`Failed to notify vendor ${vendorId}:`, err);
+          console.error(`Error message: ${err.message}`);
           return { success: false, vendorId, error: err.message };
         })
       );
@@ -286,13 +295,28 @@ async function notifyVendors(order) {
     }
   }
   
+  if (notificationPromises.length === 0) {
+    console.warn('No notifications to send - no vendors have phone numbers');
+    return [];
+  }
+  
+  console.log(`Sending ${notificationPromises.length} notification(s)...`);
   const results = await Promise.allSettled(notificationPromises);
   
-  // Log results
+  // Log detailed results
   const successful = results.filter(r => r.status === 'fulfilled' && r.value?.success).length;
   const failed = results.length - successful;
   
   console.log(`Vendor notifications: ${successful} sent, ${failed} failed`);
+  
+  // Log failed notifications
+  results.forEach((result, index) => {
+    if (result.status === 'rejected') {
+      console.error(`Notification ${index} rejected:`, result.reason);
+    } else if (result.value && !result.value.success) {
+      console.error(`Notification ${index} failed:`, result.value.error);
+    }
+  });
   
   return results;
 }
