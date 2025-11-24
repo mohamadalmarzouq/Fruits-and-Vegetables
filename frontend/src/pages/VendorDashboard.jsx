@@ -367,14 +367,56 @@ const VendorDashboard = () => {
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700">Origin</label>
-                  <input
-                    type="text"
+                  <select
                     required
                     value={formData.origin}
                     onChange={(e) => setFormData({ ...formData, origin: e.target.value })}
-                    className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2"
-                    placeholder="e.g., Spain, Turkey"
-                  />
+                    className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-green-500 focus:border-green-500"
+                  >
+                    <option value="">Select country</option>
+                    <option value="Kuwait">Kuwait</option>
+                    <option value="Saudi Arabia">Saudi Arabia</option>
+                    <option value="United Arab Emirates">United Arab Emirates</option>
+                    <option value="Qatar">Qatar</option>
+                    <option value="Bahrain">Bahrain</option>
+                    <option value="Oman">Oman</option>
+                    <option value="Egypt">Egypt</option>
+                    <option value="Jordan">Jordan</option>
+                    <option value="Lebanon">Lebanon</option>
+                    <option value="Turkey">Turkey</option>
+                    <option value="Spain">Spain</option>
+                    <option value="Italy">Italy</option>
+                    <option value="Greece">Greece</option>
+                    <option value="France">France</option>
+                    <option value="Netherlands">Netherlands</option>
+                    <option value="Belgium">Belgium</option>
+                    <option value="Germany">Germany</option>
+                    <option value="United Kingdom">United Kingdom</option>
+                    <option value="India">India</option>
+                    <option value="Pakistan">Pakistan</option>
+                    <option value="Bangladesh">Bangladesh</option>
+                    <option value="China">China</option>
+                    <option value="Thailand">Thailand</option>
+                    <option value="Vietnam">Vietnam</option>
+                    <option value="Philippines">Philippines</option>
+                    <option value="Indonesia">Indonesia</option>
+                    <option value="Australia">Australia</option>
+                    <option value="New Zealand">New Zealand</option>
+                    <option value="South Africa">South Africa</option>
+                    <option value="Morocco">Morocco</option>
+                    <option value="Tunisia">Tunisia</option>
+                    <option value="Algeria">Algeria</option>
+                    <option value="Brazil">Brazil</option>
+                    <option value="Argentina">Argentina</option>
+                    <option value="Chile">Chile</option>
+                    <option value="Peru">Peru</option>
+                    <option value="Ecuador">Ecuador</option>
+                    <option value="Colombia">Colombia</option>
+                    <option value="Mexico">Mexico</option>
+                    <option value="United States">United States</option>
+                    <option value="Canada">Canada</option>
+                    <option value="Other">Other</option>
+                  </select>
                 </div>
 
                 <div>
