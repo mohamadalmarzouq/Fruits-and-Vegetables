@@ -62,12 +62,6 @@ function formatPhoneNumber(phone) {
  * @returns {string} - Formatted message
  */
 function buildOrderMessage(order, vendorItems) {
-  const frontendUrl = process.env.FRONTEND_URL || 'https://fruits-and-vegetables-1.onrender.com';
-  const orderLink = `${frontendUrl}/vendor/dashboard?tab=orders&orderId=${order.id}`;
-  
-  console.log('Building order message with frontend URL:', frontendUrl);
-  console.log('Order link:', orderLink);
-  
   // Short format: "2kg Apple(Spain), 1kg Cucumber(KW)"
   const itemsList = vendorItems.map(item => 
     `${item.quantity}${item.unit} ${item.productName}(${item.origin})`
@@ -76,11 +70,11 @@ function buildOrderMessage(order, vendorItems) {
   const total = vendorItems.reduce((sum, item) => sum + parseFloat(item.totalPrice), 0);
   const orderShortId = order.id.slice(0, 8);
   
-  // Compact message format
+  // Compact message format (without link for now)
   return `🛒 New Order #${orderShortId}\n` +
     `${itemsList}\n` +
     `Total: ${total.toFixed(2)} KWD\n` +
-    `${orderLink}`;
+    `Please check your vendor dashboard for details.`;
 }
 
 /**
