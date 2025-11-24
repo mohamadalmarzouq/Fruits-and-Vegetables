@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import api from '../utils/api';
 import VendorOrders from '../components/VendorOrders';
@@ -7,7 +7,18 @@ import VendorInventory from '../components/VendorInventory';
 
 const VendorDashboard = () => {
   const { user, logout } = useAuth();
-  const [activeTab, setActiveTab] = useState('products'); // 'products', 'orders', 'inventory'
+  const [searchParams, setSearchParams] = useSearchParams();
+  
+  // Get tab from URL query params, default to 'products'
+  const tabFromUrl = searchParams.get('tab');
+  const [activeTab, setActiveTab] = useState(tabFromUrl || 'products'); // 'products', 'orders', 'inventory'
+  
+  // Update tab when URL changes
+  useEffect(() => {
+    if (tabFromUrl && ['products', 'orders', 'inventory'].includes(tabFromUrl)) {
+      setActiveTab(tabFromUrl);
+    }
+  }, [tabFromUrl]);
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
@@ -208,7 +219,10 @@ const VendorDashboard = () => {
           <div className="mb-6 border-b border-gray-200">
             <nav className="-mb-px flex space-x-8">
               <button
-                onClick={() => setActiveTab('products')}
+                onClick={() => {
+                  setActiveTab('products');
+                  setSearchParams({});
+                }}
                 className={`py-4 px-1 border-b-2 font-medium text-sm ${
                   activeTab === 'products'
                     ? 'border-green-500 text-green-600'
@@ -218,7 +232,15 @@ const VendorDashboard = () => {
                 Products
               </button>
               <button
-                onClick={() => setActiveTab('orders')}
+                onClick={() => {
+                  setActiveTab('orders');
+                  const orderId = searchParams.get('orderId');
+                  if (orderId) {
+                    setSearchParams({ tab: 'orders', orderId });
+                  } else {
+                    setSearchParams({ tab: 'orders' });
+                  }
+                }}
                 className={`py-4 px-1 border-b-2 font-medium text-sm ${
                   activeTab === 'orders'
                     ? 'border-green-500 text-green-600'
@@ -228,7 +250,10 @@ const VendorDashboard = () => {
                 Orders
               </button>
               <button
-                onClick={() => setActiveTab('inventory')}
+                onClick={() => {
+                  setActiveTab('inventory');
+                  setSearchParams({ tab: 'inventory' });
+                }}
                 className={`py-4 px-1 border-b-2 font-medium text-sm ${
                   activeTab === 'inventory'
                     ? 'border-green-500 text-green-600'
