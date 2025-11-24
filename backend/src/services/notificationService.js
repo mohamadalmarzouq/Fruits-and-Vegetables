@@ -62,7 +62,11 @@ function formatPhoneNumber(phone) {
  * @returns {string} - Formatted message
  */
 function buildOrderMessage(order, vendorItems) {
-  const orderLink = `${process.env.FRONTEND_URL || 'https://yourdomain.com'}/vendor/dashboard?tab=orders&orderId=${order.id}`;
+  const frontendUrl = process.env.FRONTEND_URL || 'https://fruits-and-vegetables-1.onrender.com';
+  const orderLink = `${frontendUrl}/vendor/dashboard?tab=orders&orderId=${order.id}`;
+  
+  console.log('Building order message with frontend URL:', frontendUrl);
+  console.log('Order link:', orderLink);
   
   // Short format: "2kg Apple(Spain), 1kg Cucumber(KW)"
   const itemsList = vendorItems.map(item => 
