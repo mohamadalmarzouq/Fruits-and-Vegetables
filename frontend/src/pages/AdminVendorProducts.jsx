@@ -220,7 +220,21 @@ const AdminVendorProducts = () => {
                         </div>
                         <div>
                           <span className="font-medium text-gray-700">Visible defects: </span>
-                          <span className="text-gray-600">{product.aiQualityReport.visibleDefects || 'No defects noted'}</span>
+                          {typeof product.aiQualityReport.visibleDefects === 'object' && product.aiQualityReport.visibleDefects?.score !== undefined ? (
+                            <>
+                              <span className="inline-flex items-center">
+                                {renderStars(product.aiQualityReport.visibleDefects.score || 0, product.aiQualityReport.visibleDefects.maxScore || 5)}
+                              </span>
+                              <span className="text-gray-600 ml-1">
+                                ({product.aiQualityReport.visibleDefects.score || 0}/{product.aiQualityReport.visibleDefects.maxScore || 5})
+                              </span>
+                              {product.aiQualityReport.visibleDefects.description && (
+                                <p className="text-gray-500 mt-0.5">{product.aiQualityReport.visibleDefects.description}</p>
+                              )}
+                            </>
+                          ) : (
+                            <span className="text-gray-600">{typeof product.aiQualityReport.visibleDefects === 'string' ? product.aiQualityReport.visibleDefects : 'No defects noted'}</span>
+                          )}
                         </div>
                         <div>
                           <span className="font-medium text-gray-700">Color: </span>

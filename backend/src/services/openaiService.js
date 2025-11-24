@@ -69,12 +69,16 @@ export const analyzeProductImage = async (imagePath, productName) => {
     "description": "Brief description of freshness"
   },
   "ripeness": "Description of ripeness level (e.g., 'Ripe, ready to eat', 'Underripe', 'Overripe')",
-  "visibleDefects": "Description of any visible defects, blemishes, or issues (e.g., 'Minor bruising on a few pieces', 'No visible defects', 'Significant damage')",
+  "visibleDefects": {
+    "score": 5,
+    "maxScore": 5,
+    "description": "Description of any visible defects, blemishes, or issues. Score should be lower for significant defects like fungal growth, decay, major bruising, or rot. Score 5 = no defects, 4 = minor blemishes, 3 = noticeable defects, 2 = significant defects (fungal growth, decay), 1 = severe damage or rot."
+  },
   "color": "Description of color quality and consistency (e.g., 'Bright, consistent yellow', 'Vibrant green throughout')",
   "overallQuality": "Brief overall quality assessment"
 }
 
-Be specific and detailed in your analysis. If the image quality is poor or the product is not clearly visible, note that in the assessment.`
+Be specific and detailed in your analysis. For visibleDefects score: Use 2/5 for signs of fungal growth or decay, 1/5 for severe rot or major damage, 3/5 for noticeable defects, 4/5 for minor blemishes, and 5/5 for no visible defects. If the image quality is poor or the product is not clearly visible, note that in the assessment.`
             },
             {
               type: 'image_url',
@@ -119,6 +123,23 @@ Be specific and detailed in your analysis. If the image quality is poor or the p
     }
 
     // Validate and structure the response
+    // Handle both old format (string) and new format (object with score)
+    let visibleDefects = qualityReport.visibleDefects;
+    if (typeof visibleDefects === 'string') {
+      // Legacy format - convert to new format
+      visibleDefects = {
+        score: 5,
+        maxScore: 5,
+        description: visibleDefects
+      };
+    } else if (!visibleDefects || typeof visibleDefects !== 'object') {
+      visibleDefects = {
+        score: 5,
+        maxScore: 5,
+        description: 'No defects noted'
+      };
+    }
+
     return {
       freshness: {
         score: qualityReport.freshness?.score || 0,
@@ -126,7 +147,11 @@ Be specific and detailed in your analysis. If the image quality is poor or the p
         description: qualityReport.freshness?.description || 'Not assessed'
       },
       ripeness: qualityReport.ripeness || 'Not assessed',
-      visibleDefects: qualityReport.visibleDefects || 'No defects noted',
+      visibleDefects: {
+        score: visibleDefects.score || 5,
+        maxScore: visibleDefects.maxScore || 5,
+        description: visibleDefects.description || 'No defects noted'
+      },
       color: qualityReport.color || 'Not assessed',
       overallQuality: qualityReport.overallQuality || 'Not assessed',
       analyzedAt: new Date().toISOString()
