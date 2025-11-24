@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 
 const Login = () => {
@@ -9,6 +9,8 @@ const Login = () => {
   const [loading, setLoading] = useState(false);
   const { login } = useAuth();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const redirectPath = searchParams.get('redirect');
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -21,7 +23,13 @@ const Login = () => {
       // Get user from localStorage to check role
       const user = JSON.parse(localStorage.getItem('user'));
       
-      // Redirect based on role
+      // If there's a redirect path, use it (preserves query params from SMS link)
+      if (redirectPath) {
+        navigate(redirectPath);
+        return;
+      }
+      
+      // Otherwise, redirect based on role
       if (user.role === 'admin') {
         navigate('/admin/dashboard');
       } else if (user.role === 'vendor') {
