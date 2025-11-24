@@ -4,7 +4,7 @@ import { generateToken } from '../utils/jwt.js';
 
 export const registerVendor = async (req, res, next) => {
   try {
-    const { email, password } = req.body;
+    const { email, password, phoneNumber } = req.body;
 
     if (!email || !password) {
       return res.status(400).json({ error: 'Email and password are required' });
@@ -32,13 +32,16 @@ export const registerVendor = async (req, res, next) => {
         email,
         passwordHash,
         role: 'vendor',
-        vendorStatus: 'pending'
+        vendorStatus: 'pending',
+        phoneNumber: phoneNumber || null,
+        notificationPreference: 'sms' // Default to SMS
       },
       select: {
         id: true,
         email: true,
         role: true,
         vendorStatus: true,
+        phoneNumber: true,
         createdAt: true
       }
     });

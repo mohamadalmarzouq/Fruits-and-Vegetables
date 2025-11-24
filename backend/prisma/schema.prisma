@@ -56,6 +56,8 @@ model User {
   role          UserRole
   vendorStatus  VendorStatus? @map("vendor_status")
   buyerType     BuyerType?    @map("buyer_type")
+  phoneNumber   String?        @map("phone_number")
+  notificationPreference String? @default("sms") @map("notification_preference")
   createdAt     DateTime      @default(now()) @map("created_at")
   updatedAt     DateTime      @updatedAt @map("updated_at")
 

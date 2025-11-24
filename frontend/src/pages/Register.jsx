@@ -18,6 +18,7 @@ const Register = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [phoneNumber, setPhoneNumber] = useState(''); // For vendor registration
   const [buyerType, setBuyerType] = useState('individual'); // For buyer registration
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
@@ -44,7 +45,7 @@ const Register = () => {
 
     try {
       if (registerType === 'vendor') {
-        const result = await register(email, password);
+        const result = await register(email, password, phoneNumber);
         if (result.success) {
           setSuccess(result.message || 'Registration successful! Waiting for admin approval.');
           setTimeout(() => {
@@ -145,6 +146,26 @@ const Register = () => {
                   onChange={(e) => setEmail(e.target.value)}
                 />
               </div>
+
+              {registerType === 'vendor' && (
+                <div>
+                  <label htmlFor="phoneNumber" className="block text-sm font-medium text-gray-700 mb-2">
+                    Phone Number <span className="text-gray-400 text-xs">(for order notifications)</span>
+                  </label>
+                  <input
+                    id="phoneNumber"
+                    name="phoneNumber"
+                    type="tel"
+                    className="appearance-none relative block w-full px-4 py-3 border border-gray-300 placeholder-gray-400 text-gray-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 sm:text-sm transition"
+                    placeholder="+965 12345678 or 12345678"
+                    value={phoneNumber}
+                    onChange={(e) => setPhoneNumber(e.target.value)}
+                  />
+                  <p className="mt-1 text-xs text-gray-500">
+                    Include country code (e.g., +965 for Kuwait). You'll receive SMS notifications when you get orders.
+                  </p>
+                </div>
+              )}
 
               {registerType === 'buyer' && (
                 <div>

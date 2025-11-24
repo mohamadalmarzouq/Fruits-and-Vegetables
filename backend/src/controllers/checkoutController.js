@@ -1,4 +1,5 @@
 import prisma from '../config/database.js';
+import { sendOrderNotification } from '../services/notificationService.js';
 
 // Get checkout summary
 export const getCheckoutSummary = async (req, res, next) => {
@@ -195,7 +196,9 @@ export const completeCheckout = async (req, res, next) => {
                 vendor: {
                   select: {
                     id: true,
-                    email: true
+                    email: true,
+                    phoneNumber: true,
+                    notificationPreference: true
                   }
                 }
               }
@@ -209,6 +212,12 @@ export const completeCheckout = async (req, res, next) => {
     await prisma.shoppingList.update({
       where: { id },
       data: { status: 'completed' }
+    });
+
+    // Send notifications to vendors (async, don't block response)
+    notifyVendors(order).catch(err => {
+      console.error('Failed to send vendor notifications:', err);
+      // Don't fail order creation if notifications fail
     });
 
     res.status(201).json({
@@ -229,4 +238,62 @@ export const completeCheckout = async (req, res, next) => {
     next(error);
   }
 };
+
+/**
+ * Notify all vendors who have items in this order
+ * Groups order items by vendor and sends one notification per vendor
+ */
+async function notifyVendors(order) {
+  // Group order items by vendor
+  const vendorsMap = new Map();
+  
+  for (const item of order.items) {
+    const vendorId = item.vendorProduct.vendor.id;
+    
+    if (!vendorsMap.has(vendorId)) {
+      vendorsMap.set(vendorId, {
+        vendor: item.vendorProduct.vendor,
+        items: []
+      });
+    }
+    
+    vendorsMap.get(vendorId).items.push({
+      productName: item.vendorProduct.product.name,
+      quantity: parseFloat(item.quantity),
+      unit: item.vendorProduct.unit,
+      origin: item.vendorProduct.origin,
+      totalPrice: parseFloat(item.totalPrice)
+    });
+  }
+  
+  // Send notification to each vendor
+  const notificationPromises = [];
+  
+  for (const [vendorId, vendorData] of vendorsMap) {
+    if (vendorData.vendor.phoneNumber) {
+      notificationPromises.push(
+        sendOrderNotification(
+          vendorData.vendor,
+          order,
+          vendorData.items
+        ).catch(err => {
+          console.error(`Failed to notify vendor ${vendorId}:`, err);
+          return { success: false, vendorId, error: err.message };
+        })
+      );
+    } else {
+      console.warn(`Vendor ${vendorId} (${vendorData.vendor.email}) has no phone number. Skipping notification.`);
+    }
+  }
+  
+  const results = await Promise.allSettled(notificationPromises);
+  
+  // Log results
+  const successful = results.filter(r => r.status === 'fulfilled' && r.value?.success).length;
+  const failed = results.length - successful;
+  
+  console.log(`Vendor notifications: ${successful} sent, ${failed} failed`);
+  
+  return results;
+}
 
