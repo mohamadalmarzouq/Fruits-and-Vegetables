@@ -26,13 +26,26 @@ export const resetUserPassword = async (email, newPassword) => {
 
     // Hash new password
     const passwordHash = await hashPassword(newPassword);
+    console.log('New password hash created, starts with:', passwordHash.substring(0, 10));
 
     // Update user password
-    await prisma.user.update({
+    const updatedUser = await prisma.user.update({
       where: { email },
       data: { passwordHash }
     });
 
+    console.log('Password updated in database');
+    console.log('Updated hash starts with:', updatedUser.passwordHash.substring(0, 10));
+    
+    // Verify the update by reading back
+    const verifyUser = await prisma.user.findUnique({
+      where: { email },
+      select: { passwordHash: true }
+    });
+    
+    console.log('Verified hash starts with:', verifyUser.passwordHash.substring(0, 10));
+    console.log('Hashes match:', passwordHash === verifyUser.passwordHash);
+    
     console.log('Password reset successfully for:', email);
     console.log('User role:', user.role);
     return { success: true, message: 'Password reset successfully' };
