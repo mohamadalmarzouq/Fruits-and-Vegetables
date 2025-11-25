@@ -74,6 +74,8 @@ export const login = async (req, res, next) => {
 
     // Check password
     console.log('Checking password for user:', user.email);
+    console.log('Received password length:', password?.length);
+    console.log('Received password type:', typeof password);
     console.log('Password hash length:', user.passwordHash?.length);
     console.log('Password hash starts with:', user.passwordHash?.substring(0, 10));
     console.log('User created at:', user.createdAt);
