@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">FreshSavor</string>
+    <string name="title_activity_main">FreshSavor</string>
+    <string name="package_name">com.freshsavor.app</string>
+    <string name="custom_url_scheme">com.freshsavor.app</string>
+</resources>

@@ -44,3 +44,13 @@ Thumbs.db
 # Prisma
 backend/prisma/migrations/
 
+# Capacitor
+frontend/ios/App/Pods/
+frontend/ios/App/build/
+frontend/android/.gradle/
+frontend/android/build/
+frontend/android/app/build/
+frontend/android/.idea/
+frontend/android/local.properties
+frontend/android/*.iml
+
