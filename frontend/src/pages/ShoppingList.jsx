@@ -107,7 +107,8 @@ const ShoppingList = () => {
     return <div className="flex items-center justify-center min-h-screen">Shopping list not found</div>;
   }
 
-  const allItemsHaveSelections = shoppingList.items.every(item => item.selections.length > 0);
+  // Check if at least one item has a selection
+  const hasItemsWithSelections = shoppingList.items.some(item => item.selections.length > 0);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-green-50">
@@ -147,7 +148,7 @@ const ShoppingList = () => {
               >
                 {showAddForm ? '✕ Cancel' : '+ Add Item'}
               </button>
-              {allItemsHaveSelections && shoppingList.items.length > 0 && (
+              {hasItemsWithSelections && (
                 <Link
                   to={`/buyer/shopping-lists/${id}/checkout`}
                   className="bg-green-700 text-white px-6 py-3 rounded-lg font-semibold hover:bg-green-800 transition shadow-lg hover:shadow-xl flex items-center space-x-2"

@@ -36,17 +36,20 @@ export const getCheckoutSummary = async (req, res, next) => {
       return res.status(404).json({ error: 'Shopping list not found' });
     }
 
-    // Calculate totals
+    // Calculate totals - only include items with selections
     let subtotal = 0;
     const orderItems = [];
 
-    for (const item of shoppingList.items) {
-      if (item.selections.length === 0) {
-        return res.status(400).json({
-          error: `Please select a vendor option for ${item.product.name}`
-        });
-      }
+    // Filter items to only include those with selections
+    const itemsWithSelections = shoppingList.items.filter(item => item.selections.length > 0);
 
+    if (itemsWithSelections.length === 0) {
+      return res.status(400).json({
+        error: 'Please select at least one vendor option to proceed to checkout'
+      });
+    }
+
+    for (const item of itemsWithSelections) {
       const selection = item.selections[0]; // User should have selected one
       const vendorProduct = selection.vendorProduct;
 
@@ -130,20 +133,20 @@ export const completeCheckout = async (req, res, next) => {
       return res.status(404).json({ error: 'Shopping list not found' });
     }
 
-    // Verify all items have selections
-    for (const item of shoppingList.items) {
-      if (item.selections.length === 0) {
-        return res.status(400).json({
-          error: `Please select a vendor option for ${item.product.name}`
-        });
-      }
+    // Filter items to only include those with selections
+    const itemsWithSelections = shoppingList.items.filter(item => item.selections.length > 0);
+
+    if (itemsWithSelections.length === 0) {
+      return res.status(400).json({
+        error: 'Please select at least one vendor option to complete checkout'
+      });
     }
 
-    // Calculate totals
+    // Calculate totals - only process items with selections
     let subtotal = 0;
     const orderItemsData = [];
 
-    for (const item of shoppingList.items) {
+    for (const item of itemsWithSelections) {
       const selection = item.selections[0];
       const vendorProduct = selection.vendorProduct;
 
